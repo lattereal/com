@@ -4,16 +4,16 @@ Next.js 14 (app router, JS) · Tailwind · Postgres · username + password auth 
 
 ## What's in v2
 - **Accounts**: username + password only, no email. One account per network (a keyed hash of the signup IP is stored, never the IP). The first account to register becomes **owner**.
-- **Roles**: member, rich, known, respected, mod, co-owner, owner. rich / known / respected are cosmetic badges. Mods moderate threads, posts, chat and uploads and can ban members below them. Co-owners and owners also manage categories, boards, roles, IP locks and password resets. You can only change people ranked below you; nobody can be made owner from the UI.
+- **Roles**: members can hold multiple roles: member, rich, known, respected, mod, co-owner and owner. Cosmetic badges can be combined with staff roles; permissions use the highest assigned role. Owners can rename usernames and delete non-owner accounts. Nobody can be made owner from the UI.
 - **Categories**: `/admin/categories` (co-owner, owner) add / rename / reorder / delete categories and add / edit / delete boards.
 - **Friends + DMs**: send a request from a profile or `/friends`; once accepted you can message at `/messages`.
 - **Chat**: `/chat` is a lounge for everyone. Text, images, audio, video and voice notes (mic button). DMs use the same component.
-- **Profiles**: photo, display name, bio, accent color, hashtag groups (`/g/<tag>`), up to 5 songs, and a Content tab. Uploads are public or password protected.
+- **Profiles**: public `/profiles` directory ranked by role, with searchable clickable profile cards. Individual profiles include photo, display name, bio, accent color, hashtag groups (`/g/<tag>`), up to 5 songs, and a Content tab. Uploads are public or password protected.
 
 ## Setup
 1. `npm install`
 2. Create a Neon (or Supabase) Postgres DB; copy `.env.example` to `.env.local` and fill it in.
-3. `npm run db:setup`. This is safe to re-run and **upgrades a v1 database in place** (v1 admins become owners; email columns are dropped; text categories become real categories).
+3. `npm run db:setup`. This is safe to re-run and **upgrades existing databases in place**, including the multi-role column and index (v1 admins become owners; email columns are dropped; text categories become real categories).
 4. `npm run dev`, register (you become owner). For local testing with several accounts set `IP_LOCK=off`.
 5. Deploy on Vercel with the same env vars. Keep `IP_LOCK` on in production.
 
