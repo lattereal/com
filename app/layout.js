@@ -2,6 +2,7 @@ import './globals.css';
 import { Inter } from 'next/font/google';
 import Nav from '@/components/Nav';
 import Footer from '@/components/Footer';
+import PresenceTracker from '@/components/PresenceTracker';
 import { getUser } from '@/lib/auth';
 import { sql } from '@/lib/db';
 
@@ -20,6 +21,7 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="en" className={inter.variable}>
       <body className="flex min-h-screen flex-col bg-bg font-sans text-fg">
+        <PresenceTracker />
         {user?.is_banned ? (
           <main className="grid flex-1 place-items-center text-muted">Your account has been suspended.</main>
         ) : (
