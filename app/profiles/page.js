@@ -18,7 +18,7 @@ export default async function Profiles({ searchParams }) {
     where not u.is_banned and (${q ? sql`u.username like ${'%' + q + '%'} or coalesce(u.display_name, '') ilike ${'%' + q + '%'}` : sql`true`})
     order by
       case when u.roles @> array['owner']::text[] or u.role = 'owner' then 7
-           when u.roles @> array['co_owner']::text[] then 6
+           when u.roles @> array['co_owner']::text[] or u.role = 'co_owner' then 6
            when u.roles @> array['mod']::text[] or u.role = 'mod' then 5
            when u.roles @> array['respected']::text[] or u.role = 'respected' then 4
            when u.roles @> array['known']::text[] or u.role = 'known' then 3
