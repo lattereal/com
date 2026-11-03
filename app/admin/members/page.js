@@ -95,7 +95,7 @@ export default async function Members({ searchParams }) {
                     <input name="confirm" required placeholder="DELETE" className="input mt-1" />
                   </label>
                   <button className="btn-ghost border-red-400/30 text-red-300 hover:bg-red-400/10">Delete account</button>
-                </form>
+                </form>}
               </div>}
             </section>
           );
