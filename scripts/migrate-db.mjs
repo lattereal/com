@@ -27,9 +27,9 @@ try {
   if (!bannerFk.present) {
     await sql.unsafe('alter table users add constraint users_banner_fk foreign key (banner_id) references media(id) on delete set null');
   }
-  await sql`create table if not exists site_announcement (id smallint primary key default 1 check (id = 1), message text not null default '', enabled boolean not null default false, updated_at timestamptz not null default now(), updated_by uuid references users(id) on delete set null)`;
+  await sql`create table if not exists rate_limits (key text primary key, window_start timestamptz not null, hits integer not null default 0)`;\n  await sql`create index if not exists rate_limits_window_idx on rate_limits (window_start)`;\n  await sql`create table if not exists site_announcement (id smallint primary key default 1 check (id = 1), message text not null default '', enabled boolean not null default false, updated_at timestamptz not null default now(), updated_by uuid references users(id) on delete set null)`;
   await sql`insert into site_announcement (id, message, enabled) values (1, '', false) on conflict (id) do nothing`;
-  console.log('Database migrations complete: roles, banners, profile customization and announcements are ready.');
+  console.log('Database migrations complete: roles, banners, profile customization, announcements and shared rate limits are ready.');
 } finally {
   await sql.end();
 }
