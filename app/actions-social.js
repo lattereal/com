@@ -127,6 +127,7 @@ export async function setAvatar(_, fd) {
 export async function removeAvatar() {
   const me = await currentMember();
   if (!me) return;
+  if (!await limitPersistent(`profile-media:${me.id}`, 5, 60 * 1000)) return;
   const [old] = await sql`select avatar_id from users where id = ${me.id}`;
   await sql`update users set avatar_id = null where id = ${me.id}`;
   if (old?.avatar_id) await sql`delete from media where id = ${old.avatar_id}`;
@@ -150,6 +151,7 @@ export async function setBanner(_, fd) {
 export async function removeBanner() {
   const me = await currentMember();
   if (!me) return;
+  if (!await limitPersistent(`profile-media:${me.id}`, 5, 60 * 1000)) return;
   const [old] = await sql`select banner_id from users where id = ${me.id}`;
   await sql`update users set banner_id = null where id = ${me.id}`;
   if (old?.banner_id) await sql`delete from media where id = ${old.banner_id}`;
@@ -178,6 +180,7 @@ export async function addSong(_, fd) {
 export async function deleteSong(fd) {
   const me = await currentMember();
   if (!me) return;
+  if (!await limitPersistent(`profile-media:${me.id}`, 5, 60 * 1000)) return;
   await sql`delete from media where id = (select media_id from profile_songs where id = ${Number(fd.get('id'))} and user_id = ${me.id})`;
   revalidatePath('/settings');
   revalidatePath(`/u/${me.username}`);
@@ -213,6 +216,7 @@ export async function createUpload(_, fd) {
 export async function deleteUpload(fd) {
   const me = await currentMember();
   if (!me) return;
+  if (!await limitPersistent(`profile-media:${me.id}`, 5, 60 * 1000)) return;
   const id = str(fd, 'id');
   if (!UUID.test(id)) return;
   // the owner, or a moderator enforcing the rules
