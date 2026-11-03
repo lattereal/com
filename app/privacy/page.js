@@ -11,7 +11,7 @@ export default function Privacy() {
       <h2>connection data</h2>
       <p>Our servers receive technical information such as your IP address. We use network information for rate limits and abuse prevention. The one-account-per-network check uses a keyed hash instead of keeping the raw address in your account record.</p>
       <h2>messages and uploads</h2>
-      <p>Messages are stored so they can be delivered and shown to you. They are not end-to-end encrypted. Chat and direct messages are set to be deleted after 15 hours. Password-protected uploads restrict access, but are not encrypted from site operators.</p>
+      <p>Messages are stored so they can be delivered and shown to you. They are not end-to-end encrypted. Chat and direct messages are cleaned up after 15 hours when the messaging cleanup runs, so deletion may not happen at the exact 15-hour mark. Password-protected uploads restrict access, but are not encrypted from site operators.</p>
       <h2>cookies and hosting</h2>
       <p>We use a sign-in cookie and a short-lived cookie for unlocked uploads. ComForums is hosted by Vercel and uses Neon for its database. Those providers may process technical data and logs to run their services. The site does not currently include advertising or analytics integrations.</p>
       <h2>who can see your information</h2>
