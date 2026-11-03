@@ -65,8 +65,8 @@ export async function friendOp(fd) {
 
 /* ---------- profile ---------- */
 
-const PREMIUM_ROLES = ['rich', 'respected', 'known'];
-const PREMIUM_EFFECTS = ['none', 'glow', 'gradient', 'shimmer'];
+const PREMIUM_ROLES = ['rich', 'respected', 'known', 'owner'];
+const PREMIUM_EFFECTS = ['sparkle', 'glow', 'gradient', 'shimmer', 'none'];
 const PREMIUM_THEMES = ['default', 'midnight', 'rose', 'forest', 'ocean'];
 const SOCIAL_FIELDS = ['website', 'discord', 'github', 'telegram', 'instagram', 'youtube', 'tiktok', 'x'];
 
@@ -77,8 +77,8 @@ export async function savePremiumProfile(_, fd) {
   if (!limit(`premium-prof:${me.id}`, 8, 60 * 1000)) return { error: 'Slow down a little.' };
 
   const rawColor = str(fd, 'name_color').trim();
-  const nameColor = /^#[0-9a-fA-F]{6}$/.test(rawColor) ? rawColor : '';
-  const effect = PREMIUM_EFFECTS.includes(str(fd, 'name_effect')) ? str(fd, 'name_effect') : 'none';
+  const nameColor = /^#[0-9a-fA-F]{6}$/.test(rawColor) ? rawColor : '#ff3b3b';
+  const effect = PREMIUM_EFFECTS.includes(str(fd, 'name_effect')) ? str(fd, 'name_effect') : 'sparkle';
   const theme = PREMIUM_THEMES.includes(str(fd, 'profile_theme')) ? str(fd, 'profile_theme') : 'default';
   const socials = {};
   for (const field of SOCIAL_FIELDS) {
