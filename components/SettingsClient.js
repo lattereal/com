@@ -9,10 +9,10 @@ import { ACCENTS } from '@/lib/util';
 import { userRoles } from '@/lib/roles';
 
 const sections = ['profile', 'appearance', 'music', 'account'];
-const premiumRoles = ['rich', 'respected', 'known'];
+const premiumRoles = ['rich', 'respected', 'known', 'owner'];
 const premiumSocials = ['website', 'discord', 'github', 'telegram', 'instagram', 'youtube', 'tiktok', 'x'];
 const themes = ['default', 'midnight', 'rose', 'forest', 'ocean'];
-const effects = ['none', 'glow', 'gradient', 'shimmer'];
+const effects = ['sparkle', 'glow', 'gradient', 'shimmer', 'none'];
 const area = 'w-full rounded border border-line bg-bg p-3 text-sm placeholder:text-muted focus:border-accent focus:outline-none';
 
 function Card({ title, hint, children }) {
@@ -30,10 +30,10 @@ export default function SettingsClient({ user, bio, songs }) {
         {sections.map((s) => <button key={s} type="button" onClick={() => setSection(s)} aria-pressed={section === s} className={section === s ? 'rounded bg-[#242428] px-3 py-2 text-sm text-fg' : 'rounded px-3 py-2 text-sm text-muted hover:bg-[#1a1a1e] hover:text-fg'}>{s}</button>)}
       </nav>
       {section === 'profile' && <><Card title="profile details" hint="how other members see you."><ActionForm action={saveProfile} label="save profile" wrapClass="flex flex-col gap-4" footClass="flex justify-end"><label className="flex flex-col gap-1.5 text-sm">display name<input name="display_name" defaultValue={user.display_name || ''} maxLength={32} placeholder={user.username} className="input" /><span className="text-xs text-muted">shown instead of @{user.username}; your username never changes.</span></label><label className="flex flex-col gap-1.5 text-sm">bio<textarea name="bio" defaultValue={bio || ''} maxLength={500} rows={4} placeholder="a few lines about you" className={area} /></label><fieldset><legend className="mb-2 text-sm">accent color</legend><div className="flex flex-wrap gap-3">{ACCENTS.map((c) => <label key={c} className="cursor-pointer"><input type="radio" name="accent" value={c} defaultChecked={user.accent === c} className="peer sr-only" aria-label={c} /><span style={{ background: c, '--tw-ring-color': c }} className="block h-7 w-7 rounded-full ring-offset-2 ring-offset-surface peer-checked:ring-2 peer-focus-visible:ring-2" /></label>)}</div></fieldset></ActionForm></Card></>}
-      {section === 'profile' && <Card title="premium profile" hint="extra profile styling is available to Rich, Respected, and Known members.">
+      {section === 'profile' && <Card title="premium profile" hint="extra profile styling is available to Rich, Respected, Known, and site owners.">
         {premium ? <ActionForm action={savePremiumProfile} label="save premium settings" wrapClass="flex flex-col gap-5" footClass="flex justify-end">
-          <label className="flex flex-col gap-1.5 text-sm">name color<input name="name_color" type="color" defaultValue={/^#[0-9a-fA-F]{6}$/.test(user.name_color || '') ? user.name_color : '#ededed'} className="h-11 w-20 cursor-pointer rounded border border-line bg-bg p-1" /><span className="text-xs text-muted">changes the color of your display name across your profile.</span></label>
-          <label className="flex flex-col gap-1.5 text-sm">name effect<select name="name_effect" defaultValue={effects.includes(user.name_effect) ? user.name_effect : 'none'} className="input">{effects.map((v) => <option key={v} value={v}>{v}</option>)}</select></label>
+          <label className="flex flex-col gap-1.5 text-sm">name color<input name="name_color" type="color" defaultValue={/^#[0-9a-fA-F]{6}$/.test(user.name_color || '') ? user.name_color : '#ff3b3b'} className="h-11 w-20 cursor-pointer rounded border border-line bg-bg p-1" /><span className="text-xs text-muted">changes the color of your display name across your profile.</span></label>
+          <label className="flex flex-col gap-1.5 text-sm">name effect<select name="name_effect" defaultValue={effects.includes(user.name_effect) ? user.name_effect : 'sparkle'} className="input">{effects.map((v) => <option key={v} value={v}>{v}</option>)}</select></label>
           <label className="flex flex-col gap-1.5 text-sm">profile theme<select name="profile_theme" defaultValue={themes.includes(user.profile_theme) ? user.profile_theme : 'default'} className="input">{themes.map((v) => <option key={v} value={v}>{v}</option>)}</select></label>
           <div><p className="mb-2 text-sm">social links</p><div className="grid gap-3 sm:grid-cols-2">{premiumSocials.map((key) => <label key={key} className="flex flex-col gap-1 text-xs text-muted">{key}<input name={`social_${key}`} defaultValue={socials[key] || ''} placeholder={key === 'website' ? 'https://example.com' : 'profile link'} className="input" /></label>)}</div><p className="mt-2 text-xs text-muted">only links you add are shown on your profile.</p></div>
         </ActionForm> : <div className="rounded border border-line bg-bg p-4 text-sm text-muted">These options are locked. Rich, Respected, and Known members can customize name colors, effects, themes, and social links. <a href="https://t.me/comforumscc" target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-fg">contact us on Telegram</a> if you want to ask about a rank.</div>}
