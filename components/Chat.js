@@ -160,6 +160,7 @@ export default function Chat({ endpoint, me, canModerate = false, placeholder = 
                   </div>
                 )}
                 {m.body && <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed">{m.body}</p>}
+                <span className="mt-0.5 block text-[10px] text-muted">{new Date(m.created_at).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</span>
                 <Attachment m={m} />
               </div>
               {(mine || canModerate) && (
