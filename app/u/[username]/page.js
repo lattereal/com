@@ -15,6 +15,7 @@ import { fmt } from '@/lib/time';
 import { nameOf } from '@/lib/util';
 import { userRoles } from '@/lib/roles';
 import PremiumName from '@/components/PremiumName';
+import ProfileLiveRefresh from '@/components/ProfileLiveRefresh';
 
 const PER = 20;
 
@@ -51,6 +52,7 @@ export default async function Profile({ params, searchParams }) {
   const tabCls = (on) => `border-b-2 pb-2 text-sm ${on ? 'border-accent text-fg' : 'border-transparent text-muted hover:text-fg'}`;
   return (
     <div>
+      <ProfileLiveRefresh />
       <section className={`profile-shell mb-8 overflow-hidden rounded border border-line profile-theme-${theme}`} style={{ '--profile-accent': u.accent || '#6366f1' }}>
         <div className="relative isolate h-32 overflow-hidden bg-[#141416] sm:h-44" style={{ background: `linear-gradient(120deg, ${u.accent}47, ${u.accent}0d 75%)` }}>
           {u.banner_id && <img src={`/m/${u.banner_id}`} alt="" className="absolute inset-0 z-0 h-full w-full object-cover" />}
