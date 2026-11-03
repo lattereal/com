@@ -10,7 +10,7 @@ export async function GET(req) {
   if (!title || !artist) return NextResponse.json({ image: null });
 
   try {
-    // Read artwork exposed in Last.fm's public search page metadata.
+    // Artwork comes from Last.fm's public search metadata; no API key is required.
     const search = new URL('https://www.last.fm/search');
     search.searchParams.set('q', `${artist} ${title}`);
     const response = await fetch(search, {
