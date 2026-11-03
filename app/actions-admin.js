@@ -189,3 +189,15 @@ export async function deleteMember(fd) {
   });
   back('/admin/members', 'Account and associated content deleted.');
 }
+
+
+/* Site announcement banner */
+export async function saveAnnouncement(_, fd) {
+  const actor = await staff();
+  if (!actor) return { error: 'Not allowed.' };
+  const message = cleanLine(str(fd, 'message'), 240);
+  const enabled = str(fd, 'enabled') === 'on' && message.length > 0;
+  await sql`insert into site_announcement (id, message, enabled, updated_by, updated_at) values (1, ${message}, ${enabled}, ${actor.id}, now()) on conflict (id) do update set message = excluded.message, enabled = excluded.enabled, updated_by = excluded.updated_by, updated_at = now()`;
+  revalidatePath('/', 'layout');
+  return { ok: true, message: enabled ? 'Announcement published.' : 'Announcement disabled.' };
+}
