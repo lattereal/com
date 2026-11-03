@@ -3,29 +3,25 @@ export const metadata = { title: 'Terms' };
 export default function Terms() {
   return (
     <article className="prose-page">
-      <p className="mb-2 text-xs uppercase tracking-widest text-muted">last updated november 3, 2026</p>
-      <h1>Terms of service</h1>
-      <p>By using ComForums, you agree to these rules. If you do not agree, please do not use the site.</p>
-      <h2>Your account</h2>
-      <p>Keep your password private and let us know if you think someone else has accessed your account. You are responsible for what happens through your account. Do not pretend to be someone else or try to get around a suspension or other restriction.</p>
-      <h2>How to use the site</h2>
-      <p>Follow the community rules and the laws that apply to you. Do not use ComForums to threaten or harass people, share private information without permission, scam or impersonate others, distribute malware or illegal material, violate someone's rights, or disrupt the site.</p>
-      <h2>Content you post</h2>
-      <p>Your content remains yours. When you post or upload something, you give ComForums permission to store, display, and make the technical changes needed to show it as part of the service. This permission is limited to running the site and its features. It ends when the content is removed from active systems, except where copies need to remain in backups or be kept for security or legal reasons. Only upload content you have permission to share.</p>
-      <h2>Public posts and private messages</h2>
-      <p>Threads, replies, and profile information shown publicly can be seen by other visitors. Direct messages and chat messages are stored so they can be delivered and displayed. They are not end-to-end encrypted. Password-protected uploads limit who can open them, but they are not encrypted from the site operators. Please do not use ComForums to store highly sensitive information.</p>
-      <h2>Moderation</h2>
-      <p>Staff may review reports, remove content, limit features, or suspend accounts when needed to enforce the rules or protect the community. We may act without warning when a situation needs quick attention. Relevant information may be kept or shared when required or permitted by law.</p>
-      <h2>Availability</h2>
-      <p>We do our best to keep ComForums running, but the site or individual features may be unavailable, changed, or discontinued. Keep your own copy of anything important. We cannot promise that the service will always be available or error-free.</p>
-      <h2>Other services</h2>
-      <p>ComForums relies on outside providers for hosting, databases, and other infrastructure. Those providers have their own terms and privacy policies. We are not responsible for websites or services run independently by other people.</p>
-      <h2>Disclaimers and liability</h2>
-      <p>ComForums is provided as it is and as it is available. To the extent allowed by law, we do not make guarantees that the site will be uninterrupted, secure, accurate, or suitable for a particular purpose. To the extent allowed by law, we are not responsible for indirect or consequential losses connected with use of the site. Nothing here limits rights or responsibilities that cannot legally be limited.</p>
-      <h2>Ending access</h2>
-      <p>You can stop using the site at any time. We may suspend or end access for rule violations, security concerns, legal reasons, or operational needs. Any parts of these terms that need to continue after access ends will still apply where the law allows.</p>
-      <h2>Changes to these terms</h2>
-      <p>These terms may be updated as ComForums changes. The date at the top shows when this page was last revised.</p>
+      <p className="mb-2 text-xs text-muted">updated november 3, 2026</p>
+      <h1>terms</h1>
+      <p>By using ComForums, you agree to follow these terms and the community rules.</p>
+      <h2>your account</h2>
+      <p>Keep your password safe. You are responsible for activity on your account. Do not impersonate people or get around account restrictions.</p>
+      <h2>what you can post</h2>
+      <p>Do not use the site to threaten or harass people, share private information without permission, scam others, spread malware, or post illegal content. Only upload things you have the right to share.</p>
+      <h2>your content</h2>
+      <p>You keep ownership of what you post. You allow us to store and display it as needed to run ComForums. Public posts and profile details can be seen by anyone. Messages are not end-to-end encrypted, and staff may review relevant content when handling reports or security issues.</p>
+      <h2>moderation</h2>
+      <p>We may remove content, limit features, or suspend accounts when needed to keep the site safe or enforce the rules. We may preserve or share information when the law requires or allows it.</p>
+      <h2>availability</h2>
+      <p>ComForums is provided as available. Features may change or stop working, and we cannot promise the site will always be online or error-free. Keep copies of anything important to you.</p>
+      <h2>third-party services</h2>
+      <p>Hosting, database, and other infrastructure are provided by outside services. Their own terms and privacy policies also apply.</p>
+      <h2>changes</h2>
+      <p>We may update these terms as the site changes. If you keep using ComForums after an update, you accept the revised terms.</p>
+      <h2>contact</h2>
+      <p>Questions? Reach us through the <a href="https://t.me/comforumscc" target="_blank" rel="noreferrer">ComForums Telegram channel</a>.</p>
     </article>
   );
 }
