@@ -42,6 +42,7 @@ async function resolve(user, sp) {
 export async function GET(req) {
   const user = await getUser();
   if (!user || user.is_banned) return json({ error: 'Sign in.' }, 401);
+  await purgeExpiredMessages();
   const sp = req.nextUrl.searchParams;
   const sc = await resolve(user, sp);
   if (!sc) return json({ error: 'Not found.' }, 404);
@@ -73,7 +74,8 @@ export async function POST(req) {
   if (!sameOrigin(req)) return json({ error: 'Bad origin.' }, 403);
   const user = await getUser();
   if (!user || user.is_banned) return json({ error: 'Sign in.' }, 401);
-  await purgeExpiredMessages();\n  const sc = await resolve(user, req.nextUrl.searchParams);
+  await purgeExpiredMessages();
+  const sc = await resolve(user, req.nextUrl.searchParams);
   if (!sc) return json({ error: 'Not found.' }, 404);
   if (!limit(`chat:${user.id}`, 12, 15 * 1000)) return json({ error: 'You are sending too fast.' }, 429);
 
