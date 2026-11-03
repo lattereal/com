@@ -104,6 +104,7 @@ export async function DELETE(req) {
   if (!sameOrigin(req)) return json({ error: 'Bad origin.' }, 403);
   const user = await getUser();
   if (!user || user.is_banned) return json({ error: 'Sign in.' }, 401);
+  if (!await limitPersistent(`chat-delete:${user.id}`, 10, 60 * 1000)) return json({ error: 'You are deleting messages too quickly.' }, 429);
   const sp = req.nextUrl.searchParams;
   const id = parseInt(sp.get('id'));
   if (!id) return json({ error: 'Bad request.' }, 400);
