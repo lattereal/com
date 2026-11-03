@@ -89,6 +89,7 @@ async function canPost(user, kind) {
   if (!user) return 'Sign in to post.';
   if (user.is_banned) return 'Your account has been suspended.';
   if (!await limitPersistent(`${kind}:${user.id}`, kind === 'thread' ? 3 : 5, kind === 'thread' ? 10 * 60 * 1000 : 60 * 1000)) return 'You are posting too quickly. Please wait before trying again.';
+  if (!await limitPersistent(`content-write:${user.id}`, 30, 60 * 1000)) return 'You have made too many changes. Please wait a minute.';
   return null;
 }
 
