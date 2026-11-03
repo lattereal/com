@@ -10,6 +10,10 @@ create table if not exists users (
 );
 
 alter table users add column if not exists role text not null default 'member';
+alter table users add column if not exists roles text[] not null default array['member']::text[];
+alter table users alter column roles set default array['member']::text[];
+update users set roles = array[role] where roles is null or (roles = array['member']::text[] and role <> 'member');
+create index if not exists users_roles_gin_idx on users using gin (roles);
 alter table users add column if not exists display_name text;
 alter table users add column if not exists bio text not null default '';
 alter table users add column if not exists accent text not null default '#6366f1';
