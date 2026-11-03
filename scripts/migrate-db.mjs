@@ -24,7 +24,9 @@ try {
       alter table users add constraint users_banner_fk foreign key (banner_id) references media(id) on delete set null;
     end if;
   end $`;
-  console.log('Database migrations complete: roles and profile banners are ready.');
+  await sql`create table if not exists site_announcement (id smallint primary key default 1 check (id = 1), message text not null default '', enabled boolean not null default false, updated_at timestamptz not null default now(), updated_by uuid references users(id) on delete set null)`;
+  await sql`insert into site_announcement (id, message, enabled) values (1, '', false) on conflict (id) do nothing`;
+  console.log('Database migrations complete: roles, banners and announcements are ready.');
 } finally {
   await sql.end();
 }
