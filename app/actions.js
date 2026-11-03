@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache';
 import bcrypt from 'bcryptjs';
 import { sql } from '@/lib/db';
 import { getUser, currentMember, createSession, destroySession, clientIp, ipLockHash } from '@/lib/auth';
-import { limit } from '@/lib/ratelimit';
+import { limitPersistent } from '@/lib/ratelimit';
 import { isMod, outranks } from '@/lib/roles';
 import { UUID } from '@/lib/util';
 
@@ -16,7 +16,7 @@ const str = (fd, k) => String(fd.get(k) ?? '');
 /* ---------- auth: username + password only, one account per network ---------- */
 
 export async function register(_, fd) {
-  if (!limit(`reg:${clientIp()}`, 5, 60 * 60 * 1000))
+  if (!await limitPersistent(`reg:${clientIp()}`, 5, 60 * 60 * 1000))
     return { error: 'Too many sign-up attempts from this network. Try again in an hour.' };
 
   const username = str(fd, 'username').trim().toLowerCase();
@@ -51,7 +51,7 @@ export async function register(_, fd) {
 
 export async function login(_, fd) {
   const username = str(fd, 'username').trim().toLowerCase();
-  if (!limit(`login:${clientIp()}`, 8, 10 * 60 * 1000) || !limit(`loginu:${username}`, 10, 10 * 60 * 1000))
+  if (!await limitPersistent(`login:${clientIp()}`, 8, 10 * 60 * 1000) || !await limitPersistent(`loginu:${username}`, 10, 10 * 60 * 1000))
     return { error: 'Too many attempts. Try again in a few minutes.' };
 
   const password = str(fd, 'password');
@@ -71,7 +71,7 @@ export async function logout() {
 export async function changePassword(_, fd) {
   const user = await currentMember();
   if (!user) return { error: 'Sign in first.' };
-  if (!limit(`pw:${user.id}`, 5, 10 * 60 * 1000)) return { error: 'Too many attempts. Try again later.' };
+  if (!await limitPersistent(`pw:${user.id}`, 5, 10 * 60 * 1000)) return { error: 'Too many attempts. Try again later.' };
 
   const current = str(fd, 'current');
   const next = str(fd, 'next');
@@ -85,16 +85,16 @@ export async function changePassword(_, fd) {
 
 /* ---------- posting ---------- */
 
-function canPost(user) {
+async function canPost(user, kind) {
   if (!user) return 'Sign in to post.';
   if (user.is_banned) return 'Your account has been suspended.';
-  if (!limit(`post:${user.id}`, 5, 60 * 1000)) return 'Too many requests. Wait a minute and try again.';
+  if (!await limitPersistent(`${kind}:${user.id}`, kind === 'thread' ? 3 : 5, kind === 'thread' ? 10 * 60 * 1000 : 60 * 1000)) return 'You are posting too quickly. Please wait before trying again.';
   return null;
 }
 
 export async function createThread(_, fd) {
   const user = await getUser();
-  const err = canPost(user);
+  const err = await canPost(user, 'thread');
   if (err) return { error: err };
 
   const title = str(fd, 'title').trim();
@@ -113,7 +113,7 @@ export async function createThread(_, fd) {
 
 export async function createPost(_, fd) {
   const user = await getUser();
-  const err = canPost(user);
+  const err = await canPost(user, 'thread');
   if (err) return { error: err };
 
   const threadId = Number(fd.get('thread'));
@@ -135,7 +135,7 @@ export async function createPost(_, fd) {
 export async function report(fd) {
   const user = await getUser();
   if (!user) redirect('/login');
-  if (user.is_banned || !limit(`report:${user.id}`, 5, 60 * 1000)) return;
+  if (user.is_banned || !await limitPersistent(`report:${user.id}`, 5, 60 * 1000)) return;
 
   const type = str(fd, 'type');
   const id = Number(fd.get('id'));
