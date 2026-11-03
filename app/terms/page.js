@@ -3,33 +3,29 @@ export const metadata = { title: 'Terms' };
 export default function Terms() {
   return (
     <article className="prose-page">
-      <p className="mb-2 text-xs uppercase tracking-widest text-muted">legal · last updated november 3, 2026</p>
+      <p className="mb-2 text-xs uppercase tracking-widest text-muted">last updated november 3, 2026</p>
       <h1>Terms of service</h1>
-      <p>These terms explain the basic conditions for using ComForums.</p>
-      <h2>1. Eligibility and accounts</h2>
-      <p>You must be legally permitted to use the service where you live. You are responsible for activity carried out through your account and for keeping your password confidential. Do not impersonate another person, misrepresent your identity, share access to your account, or attempt to bypass account restrictions.</p>
-      <h2>2. Acceptable use</h2>
-      <p>You must follow the published community rules and applicable law. You may not use the service to threaten, harass, stalk, dox, exploit, defraud, distribute malware, phish, distribute illegal material, infringe intellectual property rights, interfere with the service, or violate another person's privacy or rights.</p>
-      <h2>3. Your content</h2>
-      <p>You retain whatever rights you hold in content you submit. You grant the service a non-exclusive, worldwide, royalty-free permission to host, store, reproduce, format, and display that content as needed to operate the features you choose to use. This permission ends when the content is deleted from active service systems, subject to backups, legal retention, and technical limitations. You confirm that you have the rights and permissions needed to submit the content.</p>
-      <h2>4. Public and private features</h2>
-      <p>Public threads, replies, and profile details may be viewed by other visitors. Direct messages and private conversations are stored by the service and are not end-to-end encrypted. Password-protected uploads are access-controlled, not encrypted against the service operator. Do not use these features as a secure vault for highly sensitive information.</p>
-      <h2>5. Moderation and enforcement</h2>
-      <p>Administrators and moderators may review reports, remove content, restrict features, suspend accounts, or take other proportionate steps to protect the community and service. The service may preserve relevant records and respond to lawful requests. Enforcement decisions may be made without advance notice where necessary to address urgent safety, security, or abuse concerns.</p>
-      <h2>6. Availability and changes</h2>
-      <p>The service may be changed, interrupted, limited, or discontinued at any time. Features may fail, messages may be delayed, and data may become unavailable. Do not rely on ComForums as your only copy of important information. We do not promise uninterrupted availability or that every feature will remain available.</p>
-      <h2>7. Third-party services</h2>
-      <p>The application relies on hosting, database, network, and other infrastructure providers. Their services are subject to their own terms. ComForums is not responsible for independent third-party services or websites linked by users.</p>
-      <h2>8. Disclaimers</h2>
-      <p>To the maximum extent permitted by applicable law, the service is provided on an “as is” and “as available” basis. No guarantee is made that the service will be secure, error-free, uninterrupted, accurate, or suitable for a particular purpose. Nothing in these terms excludes a consumer right or other protection that cannot lawfully be excluded.</p>
-      <h2>9. Limitation of liability</h2>
-      <p>To the maximum extent permitted by applicable law, the operator is not liable for indirect, incidental, special, consequential, exemplary, or punitive loss arising from use of or inability to use the service. Any limitation is subject to rights and liabilities that cannot legally be limited. This section is not a guarantee against claims or legal action.</p>
-      <h2>10. Indemnity</h2>
-      <p>Where permitted by applicable law, you are responsible for claims arising from your unlawful use of the service or content you submit, including infringement of another person's rights. This does not require you to indemnify the operator for the operator's own unlawful conduct or waive non-waivable rights.</p>
-      <h2>11. Suspension and termination</h2>
-      <p>You may stop using the service at any time. Access may be suspended or terminated for violations, security reasons, legal obligations, or operational reasons. Sections that by their nature should continue after termination may continue to apply, subject to applicable law.</p>
-      <h2>12. Changes to these terms</h2>
-      <p>These terms may be revised as the service changes. The revision date appears above. The operator should provide any notice required by applicable law.</p>
+      <p>By using ComForums, you agree to these rules. If you do not agree, please do not use the site.</p>
+      <h2>Your account</h2>
+      <p>Keep your password private and let us know if you think someone else has accessed your account. You are responsible for what happens through your account. Do not pretend to be someone else or try to get around a suspension or other restriction.</p>
+      <h2>How to use the site</h2>
+      <p>Follow the community rules and the laws that apply to you. Do not use ComForums to threaten or harass people, share private information without permission, scam or impersonate others, distribute malware or illegal material, violate someone's rights, or disrupt the site.</p>
+      <h2>Content you post</h2>
+      <p>Your content remains yours. When you post or upload something, you give ComForums permission to store, display, and make the technical changes needed to show it as part of the service. This permission is limited to running the site and its features. It ends when the content is removed from active systems, except where copies need to remain in backups or be kept for security or legal reasons. Only upload content you have permission to share.</p>
+      <h2>Public posts and private messages</h2>
+      <p>Threads, replies, and profile information shown publicly can be seen by other visitors. Direct messages and chat messages are stored so they can be delivered and displayed. They are not end-to-end encrypted. Password-protected uploads limit who can open them, but they are not encrypted from the site operators. Please do not use ComForums to store highly sensitive information.</p>
+      <h2>Moderation</h2>
+      <p>Staff may review reports, remove content, limit features, or suspend accounts when needed to enforce the rules or protect the community. We may act without warning when a situation needs quick attention. Relevant information may be kept or shared when required or permitted by law.</p>
+      <h2>Availability</h2>
+      <p>We do our best to keep ComForums running, but the site or individual features may be unavailable, changed, or discontinued. Keep your own copy of anything important. We cannot promise that the service will always be available or error-free.</p>
+      <h2>Other services</h2>
+      <p>ComForums relies on outside providers for hosting, databases, and other infrastructure. Those providers have their own terms and privacy policies. We are not responsible for websites or services run independently by other people.</p>
+      <h2>Disclaimers and liability</h2>
+      <p>ComForums is provided as it is and as it is available. To the extent allowed by law, we do not make guarantees that the site will be uninterrupted, secure, accurate, or suitable for a particular purpose. To the extent allowed by law, we are not responsible for indirect or consequential losses connected with use of the site. Nothing here limits rights or responsibilities that cannot legally be limited.</p>
+      <h2>Ending access</h2>
+      <p>You can stop using the site at any time. We may suspend or end access for rule violations, security concerns, legal reasons, or operational needs. Any parts of these terms that need to continue after access ends will still apply where the law allows.</p>
+      <h2>Changes to these terms</h2>
+      <p>These terms may be updated as ComForums changes. The date at the top shows when this page was last revised.</p>
     </article>
   );
 }
