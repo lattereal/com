@@ -26,7 +26,7 @@ export default async function RootLayout({ children }) {
           <>
             <Nav user={user} />
             {announcement?.message && <div role="status" className="border-b border-line bg-[#19191b] px-4 py-2 text-center text-[13px] text-fg">{announcement.message}</div>}
-            <main className="mx-auto w-full max-w-[960px] flex-1 px-5 py-10">{children}</main>
+            <main className="site-main mx-auto w-full max-w-[960px] flex-1 px-5 py-10">{children}</main>
             <Footer />
           </>
         )}
