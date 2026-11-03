@@ -13,6 +13,8 @@ import ActionForm from '@/components/ActionForm';
 import { LockIcon, MusicIcon, FilmIcon } from '@/components/Icons';
 import { fmt } from '@/lib/time';
 import { nameOf } from '@/lib/util';
+import { userRoles } from '@/lib/roles';
+import PremiumName from '@/components/PremiumName';
 
 const PER = 20;
 
@@ -30,9 +32,12 @@ function FriendButtons({ state, username }) {
 
 export default async function Profile({ params, searchParams }) {
   const viewer = await getUser();
-  const [u] = await sql`select id, username, display_name, bio, accent, avatar_id, banner_id, role, roles, created_at, is_banned from users where username = ${params.username.toLowerCase()}`;
+  const [u] = await sql`select id, username, display_name, bio, accent, avatar_id, banner_id, role, roles, name_color, name_effect, profile_theme, socials, created_at, is_banned from users where username = ${params.username.toLowerCase()}`;
   if (!u) notFound();
   const own = viewer?.id === u.id;
+  const premium = userRoles(u).some((r) => ['rich', 'respected', 'known'].includes(r));
+  const theme = premium && ['midnight', 'rose', 'forest', 'ocean'].includes(u.profile_theme) ? u.profile_theme : 'default';
+  const socials = premium && u.socials && typeof u.socials === 'object' ? Object.entries(u.socials).filter(([, url]) => typeof url === 'string' && /^https?:\/\//i.test(url)) : [];
   const tab = searchParams.tab === 'content' ? 'content' : 'threads';
   const page = Math.max(1, parseInt(searchParams.page) || 1);
   const [[c], songs, fs] = await Promise.all([
@@ -46,7 +51,7 @@ export default async function Profile({ params, searchParams }) {
   const tabCls = (on) => `border-b-2 pb-2 text-sm ${on ? 'border-accent text-fg' : 'border-transparent text-muted hover:text-fg'}`;
   return (
     <div>
-      <section className="mb-8 overflow-hidden rounded border border-line bg-surface">
+      <section className={`mb-8 overflow-hidden rounded border border-line profile-theme-${theme}`}>
         <div className="relative isolate h-32 overflow-hidden bg-[#141416] sm:h-44" style={{ background: `linear-gradient(120deg, ${u.accent}47, ${u.accent}0d 75%)` }}>
           {u.banner_id && <img src={`/m/${u.banner_id}`} alt="" className="absolute inset-0 z-0 h-full w-full object-cover" />}
         </div>
@@ -55,8 +60,9 @@ export default async function Profile({ params, searchParams }) {
             <div className="h-[88px] w-[88px] shrink-0 overflow-hidden rounded-full border-4 border-surface bg-surface"><Avatar user={u} size={80} /></div>
             <div className="flex flex-wrap justify-end gap-2 pb-1">{own && <Link href="/settings" className="btn-ghost">edit profile</Link>}{viewer && !own && !viewer.is_banned && <FriendButtons state={fs} username={u.username} />}</div>
           </div>
-          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1"><h1 className="text-xl font-medium">{nameOf(u)}</h1><RoleBadge role={u.role} roles={u.roles} />{u.is_banned && <span className="text-xs text-red-400">suspended</span>}</div>
+          <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1"><h1 className="text-xl font-medium"><PremiumName user={u} premium={premium}>{nameOf(u)}</PremiumName></h1><RoleBadge role={u.role} roles={u.roles} />{u.is_banned && <span className="text-xs text-red-400">suspended</span>}</div>
           <p className="mt-0.5 text-[13px] text-muted">@{u.username} · joined {new Date(u.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })} · {fmt(c.threads + c.posts)} contributions</p>
+          {socials.length > 0 && <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-xs">{socials.map(([key, url]) => <a key={key} href={url} target="_blank" rel="noopener noreferrer" className="text-muted underline-offset-4 hover:text-fg hover:underline">{key}</a>)}</div>}
           {u.bio && <p className="mt-4 max-w-[620px] whitespace-pre-wrap break-words text-[15px] leading-relaxed">{u.bio}</p>}
         </div>
         {songs.length > 0 && <div className="border-t border-line px-6 py-3"><SongPlayer accent={u.accent} songs={songs.map((s) => ({ id: s.id, title: s.title, artist: s.artist, src: `/m/${s.media_id}` }))} /></div>}
