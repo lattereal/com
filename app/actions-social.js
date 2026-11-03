@@ -8,7 +8,7 @@ import { currentMember, addUnlock, clientIp } from '@/lib/auth';
 import { limit } from '@/lib/ratelimit';
 import { saveMedia } from '@/lib/media';
 import { isMod } from '@/lib/roles';
-import { ACCENTS, UUID, cleanLine, cleanText, parseTags } from '@/lib/util';
+import { ACCENTS, UUID, cleanLine, cleanText } from '@/lib/util';
 
 const str = (fd, k) => String(fd.get(k) ?? '');
 const MB = 1024 * 1024;
@@ -73,13 +73,7 @@ export async function saveProfile(_, fd) {
   const display = cleanLine(str(fd, 'display_name'), 32) || null;
   const bio = cleanText(str(fd, 'bio'), 500);
   const accent = ACCENTS.includes(str(fd, 'accent')) ? str(fd, 'accent') : me.accent;
-  const tags = parseTags(str(fd, 'tags'));
-
-  await sql.begin(async (tx) => {
-    await tx`update users set display_name = ${display}, bio = ${bio}, accent = ${accent} where id = ${me.id}`;
-    await tx`delete from profile_tags where user_id = ${me.id}`;
-    if (tags.length) await tx`insert into profile_tags ${tx(tags.map((tag) => ({ user_id: me.id, tag })), 'user_id', 'tag')}`;
-  });
+  await sql`update users set display_name = ${display}, bio = ${bio}, accent = ${accent} where id = ${me.id}`;
   revalidatePath('/', 'layout');
   return { ok: true, message: 'Profile saved.' };
 }
@@ -104,6 +98,29 @@ export async function removeAvatar() {
   const [old] = await sql`select avatar_id from users where id = ${me.id}`;
   await sql`update users set avatar_id = null where id = ${me.id}`;
   if (old?.avatar_id) await sql`delete from media where id = ${old.avatar_id}`;
+  revalidatePath('/', 'layout');
+}
+
+
+export async function setBanner(_, fd) {
+  const me = await currentMember();
+  if (!me) return { error: 'Sign in first.' };
+  if (!limit(`banner:${me.id}`, 5, 60 * 1000)) return { error: 'Slow down a little.' };
+  const r = await saveMedia(fd.get('file'), me.id, ['image'], 4 * MB);
+  if (r.error) return r;
+  const [old] = await sql`select banner_id from users where id = ${me.id}`;
+  await sql`update users set banner_id = ${r.id} where id = ${me.id}`;
+  if (old?.banner_id) await sql`delete from media where id = ${old.banner_id}`;
+  revalidatePath('/', 'layout');
+  return { ok: true, message: 'Banner updated.' };
+}
+
+export async function removeBanner() {
+  const me = await currentMember();
+  if (!me) return;
+  const [old] = await sql`select banner_id from users where id = ${me.id}`;
+  await sql`update users set banner_id = null where id = ${me.id}`;
+  if (old?.banner_id) await sql`delete from media where id = ${old.banner_id}`;
   revalidatePath('/', 'layout');
 }
 
