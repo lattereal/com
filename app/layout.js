@@ -8,7 +8,8 @@ import { sql } from '@/lib/db';
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
 
 export const metadata = {
-  title: { default: 'ComForums', template: '%s · ComForums' },
+  title: { default: 'comforums.com', template: '%s · comforums.com' },
+  applicationName: 'comforums.com',
   description: 'A private discussion board.',
   robots: { index: false, follow: false },
 };
