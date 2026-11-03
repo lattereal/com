@@ -7,6 +7,7 @@ export default function Footer() {
         <span>ComForums © 2026</span>
         <nav className="flex flex-wrap gap-4">
           <Link href="/rules" className="hover:text-fg">Rules</Link>
+          <Link href="/ranks" className="hover:text-fg">Ranks</Link>
           <Link href="/privacy" className="hover:text-fg">Privacy</Link>
           <Link href="/terms" className="hover:text-fg">Terms</Link>
         </nav>
