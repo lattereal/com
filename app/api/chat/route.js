@@ -42,7 +42,6 @@ async function resolve(user, sp) {
 export async function GET(req) {
   const user = await getUser();
   if (!user || user.is_banned) return json({ error: 'Sign in.' }, 401);
-  await purgeExpiredMessages();
   const sp = req.nextUrl.searchParams;
   const sc = await resolve(user, sp);
   if (!sc) return json({ error: 'Not found.' }, 404);
