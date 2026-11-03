@@ -13,6 +13,10 @@ import { ACCENTS, UUID, cleanLine, cleanText } from '@/lib/util';
 const str = (fd, k) => String(fd.get(k) ?? '');
 const MB = 1024 * 1024;
 
+async function allowProfileWrite(me) {
+  return limitPersistent(`profile-write:${me.id}`, 20, 60 * 1000);
+}
+
 /* ---------- friends ---------- */
 
 async function addFriendInner(me, rawName) {
@@ -74,6 +78,7 @@ const SOCIAL_FIELDS = ['website', 'discord', 'github', 'telegram', 'instagram', 
 export async function savePremiumProfile(_, fd) {
   const me = await currentMember();
   if (!me) return { error: 'Sign in first.' };
+  if (!await allowProfileWrite(me)) return { error: 'You are editing your profile too quickly. Please wait a minute.' };
   if (!userRoles(me).some((r) => PREMIUM_ROLES.includes(r))) return { error: 'This customization is available to Rich, Respected, and Known members.' };
   if (!await limitPersistent(`premium-prof:${me.id}`, 6, 60 * 1000)) return { error: 'Slow down a little.' };
 
@@ -101,6 +106,7 @@ export async function savePremiumProfile(_, fd) {
 export async function saveProfile(_, fd) {
   const me = await currentMember();
   if (!me) return { error: 'Sign in first.' };
+  if (!await allowProfileWrite(me)) return { error: 'You are editing your profile too quickly. Please wait a minute.' };
   if (!await limitPersistent(`prof:${me.id}`, 6, 60 * 1000)) return { error: 'Slow down a little.' };
 
   const display = cleanLine(str(fd, 'display_name'), 32) || null;
@@ -114,6 +120,7 @@ export async function saveProfile(_, fd) {
 export async function setAvatar(_, fd) {
   const me = await currentMember();
   if (!me) return { error: 'Sign in first.' };
+  if (!await allowProfileWrite(me)) return { error: 'You are editing your profile too quickly. Please wait a minute.' };
   if (!await limitPersistent(`profile-media:${me.id}`, 5, 60 * 1000)) return { error: 'Slow down a little.' };
 
   const r = await saveMedia(fd.get('file'), me.id, ['image'], 2 * MB);
@@ -128,6 +135,7 @@ export async function setAvatar(_, fd) {
 export async function removeAvatar() {
   const me = await currentMember();
   if (!me) return;
+  if (!await allowProfileWrite(me)) return { error: 'You are editing your profile too quickly. Please wait a minute.' };
   if (!await limitPersistent(`profile-media:${me.id}`, 5, 60 * 1000)) return;
   const [old] = await sql`select avatar_id from users where id = ${me.id}`;
   await sql`update users set avatar_id = null where id = ${me.id}`;
@@ -139,6 +147,7 @@ export async function removeAvatar() {
 export async function setBanner(_, fd) {
   const me = await currentMember();
   if (!me) return { error: 'Sign in first.' };
+  if (!await allowProfileWrite(me)) return { error: 'You are editing your profile too quickly. Please wait a minute.' };
   if (!await limitPersistent(`profile-media:${me.id}`, 5, 60 * 1000)) return { error: 'Slow down a little.' };
   const r = await saveMedia(fd.get('file'), me.id, ['image'], 4 * MB);
   if (r.error) return r;
@@ -152,6 +161,7 @@ export async function setBanner(_, fd) {
 export async function removeBanner() {
   const me = await currentMember();
   if (!me) return;
+  if (!await allowProfileWrite(me)) return { error: 'You are editing your profile too quickly. Please wait a minute.' };
   if (!await limitPersistent(`profile-media:${me.id}`, 5, 60 * 1000)) return;
   const [old] = await sql`select banner_id from users where id = ${me.id}`;
   await sql`update users set banner_id = null where id = ${me.id}`;
@@ -162,6 +172,7 @@ export async function removeBanner() {
 export async function addSong(_, fd) {
   const me = await currentMember();
   if (!me) return { error: 'Sign in first.' };
+  if (!await allowProfileWrite(me)) return { error: 'You are editing your profile too quickly. Please wait a minute.' };
   if (!await limitPersistent(`profile-media:${me.id}`, 5, 60 * 1000)) return { error: 'Slow down a little.' };
 
   const title = cleanLine(str(fd, 'title'), 80);
@@ -181,6 +192,7 @@ export async function addSong(_, fd) {
 export async function deleteSong(fd) {
   const me = await currentMember();
   if (!me) return;
+  if (!await allowProfileWrite(me)) return { error: 'You are editing your profile too quickly. Please wait a minute.' };
   if (!await limitPersistent(`profile-media:${me.id}`, 5, 60 * 1000)) return;
   await sql`delete from media where id = (select media_id from profile_songs where id = ${Number(fd.get('id'))} and user_id = ${me.id})`;
   revalidatePath('/settings');
@@ -192,6 +204,7 @@ export async function deleteSong(fd) {
 export async function createUpload(_, fd) {
   const me = await currentMember();
   if (!me) return { error: 'Sign in first.' };
+  if (!await allowProfileWrite(me)) return { error: 'You are editing your profile too quickly. Please wait a minute.' };
   if (!await limitPersistent(`profile-media:${me.id}`, 5, 60 * 1000)) return { error: 'Slow down a little.' };
 
   const title = cleanLine(str(fd, 'title'), 100);
@@ -217,6 +230,7 @@ export async function createUpload(_, fd) {
 export async function deleteUpload(fd) {
   const me = await currentMember();
   if (!me) return;
+  if (!await allowProfileWrite(me)) return { error: 'You are editing your profile too quickly. Please wait a minute.' };
   if (!await limitPersistent(`profile-media:${me.id}`, 5, 60 * 1000)) return;
   const id = str(fd, 'id');
   if (!UUID.test(id)) return;
