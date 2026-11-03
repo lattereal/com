@@ -7,7 +7,7 @@ import { sql } from '@/lib/db';
 import { currentMember, addUnlock, clientIp } from '@/lib/auth';
 import { limit } from '@/lib/ratelimit';
 import { saveMedia } from '@/lib/media';
-import { isMod } from '@/lib/roles';
+import { isMod, userRoles } from '@/lib/roles';
 import { ACCENTS, UUID, cleanLine, cleanText } from '@/lib/util';
 
 const str = (fd, k) => String(fd.get(k) ?? '');
@@ -64,6 +64,38 @@ export async function friendOp(fd) {
 }
 
 /* ---------- profile ---------- */
+
+const PREMIUM_ROLES = ['rich', 'respected', 'known'];
+const PREMIUM_EFFECTS = ['none', 'glow', 'gradient', 'shimmer'];
+const PREMIUM_THEMES = ['default', 'midnight', 'rose', 'forest', 'ocean'];
+const SOCIAL_FIELDS = ['website', 'discord', 'github', 'telegram', 'instagram', 'youtube', 'tiktok', 'x'];
+
+export async function savePremiumProfile(_, fd) {
+  const me = await currentMember();
+  if (!me) return { error: 'Sign in first.' };
+  if (!userRoles(me).some((r) => PREMIUM_ROLES.includes(r))) return { error: 'This customization is available to Rich, Respected, and Known members.' };
+  if (!limit(`premium-prof:${me.id}`, 8, 60 * 1000)) return { error: 'Slow down a little.' };
+
+  const rawColor = str(fd, 'name_color').trim();
+  const nameColor = /^#[0-9a-fA-F]{6}$/.test(rawColor) ? rawColor : '';
+  const effect = PREMIUM_EFFECTS.includes(str(fd, 'name_effect')) ? str(fd, 'name_effect') : 'none';
+  const theme = PREMIUM_THEMES.includes(str(fd, 'profile_theme')) ? str(fd, 'profile_theme') : 'default';
+  const socials = {};
+  for (const field of SOCIAL_FIELDS) {
+    const raw = cleanLine(str(fd, `social_${field}`), 200);
+    if (!raw) continue;
+    try {
+      const url = new URL(raw.startsWith('https://') || raw.startsWith('http://') ? raw : `https://${raw}`);
+      if (!['https:', 'http:'].includes(url.protocol)) continue;
+      socials[field] = url.toString();
+    } catch {}
+  }
+  await sql`update users set name_color = ${nameColor}, name_effect = ${effect}, profile_theme = ${theme}, socials = ${JSON.stringify(socials)}::jsonb where id = ${me.id}`;
+  revalidatePath('/settings');
+  revalidatePath(`/u/${me.username}`);
+  return { ok: true, message: 'Premium profile settings saved.' };
+}
+
 
 export async function saveProfile(_, fd) {
   const me = await currentMember();
