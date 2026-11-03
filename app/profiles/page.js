@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { sql } from '@/lib/db';
-import Avatar from '@/components/Avatar';
 import RoleBadge from '@/components/RoleBadge';
 import { nameOf } from '@/lib/util';
 import { fmt } from '@/lib/time';
@@ -8,59 +7,56 @@ import { fmt } from '@/lib/time';
 export const metadata = { title: 'Profiles' };
 export const dynamic = 'force-dynamic';
 
+const groups = [
+  ['owner', 'Owners'], ['co_owner', 'Co-owners'], ['mod', 'Moderators'],
+  ['respected', 'Respected'], ['known', 'Known'], ['rich', 'Rich'], ['member', 'Members'],
+];
+
 export default async function Profiles({ searchParams }) {
   const q = String(searchParams?.q || '').trim().toLowerCase().slice(0, 20).replace(/[\\\\%_]/g, '\\\\$&');
   const members = await sql`
-    select u.id, u.username, u.display_name, u.bio, u.avatar_id, u.accent, u.role, u.roles,
-      (select count(*)::int from threads t where t.author_id = u.id) +
-      (select count(*)::int from posts p where p.author_id = u.id) as activity
+    select u.id, u.username, u.display_name, u.role, u.roles, u.created_at,
+      (select count(*)::int from threads t where t.author_id = u.id) as threads,
+      (select count(*)::int from posts p where p.author_id = u.id) as replies
     from users u
-    where not u.is_banned and (${q ? sql`u.username like ${'%' + q + '%'} or coalesce(u.display_name, '') ilike ${'%' + q + '%'}` : sql`true`})
-    order by
-      case when u.roles @> array['owner']::text[] or u.role = 'owner' then 7
-           when u.roles @> array['co_owner']::text[] or u.role = 'co_owner' then 6
-           when u.roles @> array['mod']::text[] or u.role = 'mod' then 5
-           when u.roles @> array['respected']::text[] or u.role = 'respected' then 4
-           when u.roles @> array['known']::text[] or u.role = 'known' then 3
-           when u.roles @> array['rich']::text[] or u.role = 'rich' then 2 else 1 end desc,
-      u.created_at asc
-    limit 100
+    where not u.is_banned and (${q ? sql`u.username ilike ${'%' + q + '%'} or coalesce(u.display_name, '') ilike ${'%' + q + '%'}` : sql`true`})
+    order by u.created_at asc limit 500
   `;
+  const roleOf = (m) => {
+    const rs = [...new Set([...(Array.isArray(m.roles) ? m.roles : []), m.role || 'member'])];
+    return [...groups].reverse().find(([key]) => rs.includes(key))?.[0] || 'member';
+  };
+  const filtered = groups.map(([key, label]) => ({ key, label, people: members.filter((m) => roleOf(m) === key) })).filter((g) => g.people.length);
   return (
     <div className="mx-auto max-w-[1000px]">
       <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
-        <div><p className="mb-1 text-xs font-medium uppercase tracking-[.16em] text-muted">Community</p><h1 className="text-2xl font-semibold">Profiles</h1>
-          <p className="mt-1 text-sm text-muted">Meet the people behind the conversations.</p></div>
+        <div><p className="mb-1 text-xs uppercase tracking-widest text-muted">community directory</p><h1 className="text-2xl font-semibold">profiles</h1><p className="mt-1 text-sm text-muted">members, ordered by role.</p></div>
         <form className="flex w-full gap-2 sm:w-auto">
-          <input name="q" defaultValue={searchParams?.q || ''} placeholder="Find a member..." aria-label="Find a member" className="input sm:w-64" />
-          <button className="btn-ghost">Search</button>
+          <input name="q" defaultValue={searchParams?.q || ''} placeholder="search members" aria-label="search members" className="input sm:w-64" />
+          <button className="btn-ghost">search</button>
         </form>
       </div>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {members.map((m) => (
-          <Link key={m.id} href={`/u/${m.username}`} className="group relative overflow-hidden rounded-xl border border-line bg-surface p-4 transition-all hover:-translate-y-0.5 hover:border-[#45454d] hover:bg-[#19191e]">
-            <div className="absolute inset-x-0 top-0 h-1 opacity-80" style={{background:m.accent || '#6366f1'}} />
-            <div className="flex items-center gap-3">
-              <Avatar user={m} size={48} />
-              <div className="min-w-0 flex-1">
-                <div className="truncate font-semibold group-hover:text-white">{nameOf(m)}</div>
-                <div className="truncate text-xs text-muted">@{m.username}</div>
+      <div className="space-y-8">
+        {filtered.map((group) => (
+          <section key={group.key}>
+            <div className="mb-2 flex items-center justify-between"><h2 className="text-sm font-medium">{group.label}</h2><span className="text-xs tabular-nums text-muted">{group.people.length}</span></div>
+            <div className="overflow-hidden border-y border-line">
+              <div className="grid grid-cols-[minmax(0,1fr)_72px_72px_100px] gap-3 bg-[#19191b] px-3 py-2 text-[11px] text-muted sm:grid-cols-[minmax(0,1fr)_90px_90px_120px]">
+                <span>user</span><span className="text-right">threads</span><span className="text-right">replies</span><span className="text-right">joined</span>
               </div>
-              <span className="text-muted transition-transform group-hover:translate-x-0.5">↗</span>
+              {group.people.map((m) => (
+                <Link key={m.id} href={`/u/${m.username}`} className="grid grid-cols-[minmax(0,1fr)_72px_72px_100px] items-center gap-3 border-t border-line bg-bg px-3 py-2 text-[12px] transition-colors hover:bg-[#19191b] sm:grid-cols-[minmax(0,1fr)_90px_90px_120px]">
+                  <span className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1"><span className="truncate font-medium">{nameOf(m)}</span><span className="truncate text-muted">@{m.username}</span><RoleBadge role={m.role} roles={m.roles} /></span>
+                  <span className="text-right tabular-nums">{fmt(m.threads)}</span><span className="text-right tabular-nums">{fmt(m.replies)}</span>
+                  <span className="text-right text-muted">{new Date(m.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</span>
+                </Link>
+              ))}
             </div>
-            <div className="mt-3 min-h-10 text-[13px] leading-relaxed text-muted">{m.bio ? (m.bio.length > 90 ? m.bio.slice(0, 90) + '…' : m.bio) : 'No bio added yet.'}</div>
-            <div className="mt-3 flex min-h-6 flex-wrap items-center gap-1.5">
-              <RoleBadge role={m.role} roles={m.roles} />
-              {m.role === 'member' && !m.roles?.some((r) => r !== 'member') && <span className="text-[11px] text-muted">Member</span>}
-            </div>
-            <div className="mt-3 flex items-center justify-between border-t border-line pt-3 text-[11px] text-muted">
-              <span>Community activity</span><span className="tabular-nums">{fmt(m.activity || 0)}</span>
-            </div>
-          </Link>
+          </section>
         ))}
       </div>
-      {!members.length && <p className="rounded-lg border border-line bg-surface p-8 text-center text-sm text-muted">No profiles found.</p>}
-      {members.length === 100 && <p className="mt-5 text-center text-xs text-muted">Showing the first 100 members.</p>}
+      {!members.length && <p className="border-y border-line py-10 text-center text-sm text-muted">no profiles found.</p>}
+      {members.length === 500 && <p className="mt-5 text-center text-xs text-muted">showing the first 500 profiles.</p>}
     </div>
   );
 }
