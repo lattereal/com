@@ -21,7 +21,7 @@ export default function Terms() {
       <h2>changes</h2>
       <p>We may update these terms as the site changes. If you keep using ComForums after an update, you accept the revised terms.</p>
       <h2>contact</h2>
-      <p>Questions? Reach us through the <a href="https://t.me/comforumscc" target="_blank" rel="noreferrer">ComForums Telegram channel</a>.</p>
+      <p>Questions? Reach us through the <a href="https://t.me/comforumscom" target="_blank" rel="noreferrer">ComForums Telegram channel</a>.</p>
     </article>
   );
 }
