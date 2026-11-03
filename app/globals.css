@@ -36,4 +36,4 @@ body { color: #ededed; font-size: 14px; -webkit-font-smoothing: antialiased; }
 .prose-page p + p, .prose-page p + ul { margin-top: 12px; }
 
 /* Consistent lowercase interface typography. */
-body { text-transform: lowercase; }
+body :not(pre):not(code) { text-transform: lowercase; }
