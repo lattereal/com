@@ -19,6 +19,21 @@ import ProfileLiveRefresh from '@/components/ProfileLiveRefresh';
 
 const PER = 20;
 
+function presenceLabel(lastSeenAt) {
+  if (!lastSeenAt) return null;
+  const time = new Date(lastSeenAt).getTime();
+  if (!Number.isFinite(time)) return null;
+  const elapsed = Date.now() - time;
+  if (elapsed <= 2 * 60 * 1000) return 'active now';
+  const minutes = Math.floor(elapsed / 60000);
+  if (minutes < 60) return `last seen ${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `last seen ${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `last seen ${days}d ago`;
+  return `last seen ${new Date(time).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
+}
+
 export async function generateMetadata({ params }) { return { title: `@${params.username}` }; }
 
 function FriendButtons({ state, username }) {
@@ -39,6 +54,7 @@ export default async function Profile({ params, searchParams }) {
   const premium = userRoles(u).some((r) => ['rich', 'respected', 'known', 'owner'].includes(r));
   const theme = premium && ['midnight', 'rose', 'forest', 'ocean'].includes(u.profile_theme) ? u.profile_theme : 'default';
   const socials = premium && u.socials && typeof u.socials === 'object' ? Object.entries(u.socials).filter(([, url]) => typeof url === 'string' && /^https?:\/\//i.test(url)) : [];
+  const presence = presenceLabel(u.last_seen_at);
   const tab = searchParams.tab === 'content' ? 'content' : 'threads';
   const page = Math.max(1, parseInt(searchParams.page) || 1);
   const [[c], songs, fs] = await Promise.all([
@@ -64,8 +80,8 @@ export default async function Profile({ params, searchParams }) {
           </div>
           <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1"><h1 className="text-xl font-medium"><PremiumName user={u} premium={premium}>{nameOf(u)}</PremiumName></h1><RoleBadge role={u.role} roles={u.roles} />{u.is_banned && <span className="text-xs text-red-400">suspended</span>}</div>
           <p className="mt-0.5 text-[13px] text-muted">@{u.username} · joined {new Date(u.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })} · {fmt(c.threads + c.posts)} contributions</p>
+          {presence && <p className="mt-1 flex items-center gap-1.5 text-xs text-muted"><span className={`h-1.5 w-1.5 rounded-full ${presence === 'active now' ? 'bg-emerald-400' : 'bg-muted'}`} />{presence}{presence === 'active now' && u.last_page ? ` · on ${u.last_page}` : ''}</p>}
           {socials.length > 0 && <div className="mt-3 flex flex-wrap gap-3">{socials.map(([key, url]) => <a key={key} href={url} target="_blank" rel="noopener noreferrer" aria-label={key} title={key} className="social-link inline-flex items-center gap-2 rounded border border-line px-2.5 py-1.5 text-xs text-muted hover:text-fg"><img src={`https://cdn.simpleicons.org/${({ x: 'x', website: 'googlechrome' })[key] || key}`} alt="" width="15" height="15" loading="lazy" />{key}</a>)}</div>}
-          {u.last_seen_at && <p className="mt-1 text-xs text-muted">last seen on {u.last_page || 'the site'} · {new Date(u.last_seen_at).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })}</p>}
           {u.bio && <p className="mt-4 max-w-[620px] whitespace-pre-wrap break-words text-[15px] leading-relaxed">{u.bio}</p>}
         </div>
         {songs.length > 0 && <div className="border-t border-line px-6 py-3"><SongPlayer accent={u.accent} songs={songs.map((s) => ({ id: s.id, title: s.title, artist: s.artist, src: `/m/${s.media_id}` }))} /></div>}
