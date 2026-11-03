@@ -39,7 +39,7 @@ export default async function Members({ searchParams }) {
       <div className="space-y-3">
         {rows.map((r) => {
           const below = outranks(actor, r);
-          const assigned = Array.isArray(r.roles) && r.roles.length ? r.roles : [r.role || 'member'];
+          const assigned = [...new Set([...(Array.isArray(r.roles) ? r.roles : []), r.role || 'member'])];
           const targetIsOwner = assigned.includes('owner');
           return (
             <section key={r.id} className="rounded-xl border border-line bg-surface p-4">
