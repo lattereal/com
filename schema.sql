@@ -45,6 +45,13 @@ alter table users add constraint users_role_check
 -- one account per network
 create unique index if not exists users_ip_hash_key on users (ip_hash) where ip_hash is not null;
 
+create table if not exists rate_limits (
+  key text primary key,
+  window_start timestamptz not null,
+  hits integer not null default 0
+);
+create index if not exists rate_limits_window_idx on rate_limits (window_start);
+
 /* ---------- media (avatars, songs, uploads, chat attachments) stored in Postgres ---------- */
 
 create table if not exists media (
