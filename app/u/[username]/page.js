@@ -70,10 +70,6 @@ export default async function Profile({ params, searchParams }) {
   if (tab === 'threads')
     rows = await sql`select ${THREAD_COLS(sql)} from threads t join users u on u.id = t.author_id
                      where t.author_id = ${u.id} order by t.created_at desc limit ${PER} offset ${(page - 1) * PER}`;
-  else if (tab === 'posts')
-    rows = await sql`select p.id, p.thread_id, p.content, p.created_at, u.username, t.title as thread_title
-                     from posts p join users u on u.id = p.author_id join threads t on t.id = p.thread_id
-                     where p.author_id = ${u.id} order by p.created_at desc limit ${PER} offset ${(page - 1) * PER}`;
   else
     rows = await sql`select up.id, up.title, up.visibility, up.media_id, m.mime from uploads up
                      join media m on m.id = up.media_id where up.owner_id = ${u.id} order by up.created_at desc limit 60`;
@@ -102,9 +98,10 @@ export default async function Profile({ params, searchParams }) {
             {u.is_banned && <span className="text-xs text-red-400">suspended</span>}
           </div>
           <p className="mt-0.5 text-[13px] text-muted">
-            @{u.username} · Joined {new Date(u.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })} · {fmt(c.threads + c.posts)} posts
+            @{u.username} · Joined {new Date(u.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })} · {fmt(c.threads + c.posts)} contributions
           </p>
-          {u.bio && <p className="mt-4 max-w-[620px] whitespace-pre-wrap break-words text-[15px] leading-relaxed">{u.bio}</p>}        </div>
+          {u.bio && <p className="mt-4 max-w-[620px] whitespace-pre-wrap break-words text-[15px] leading-relaxed">{u.bio}</p>}
+        </div>
         {songs.length > 0 && (
           <div className="border-t border-line px-6 py-3">
             <SongPlayer accent={u.accent} songs={songs.map((s) => ({ id: s.id, title: s.title, artist: s.artist, src: `/m/${s.media_id}` }))} />
