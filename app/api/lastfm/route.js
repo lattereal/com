@@ -2,21 +2,42 @@ import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
+const clean = (value, max) => String(value || '').trim().slice(0, max);
+
 export async function GET(req) {
-  const key = process.env.LASTFM_API_KEY;
-  const title = (req.nextUrl.searchParams.get('title') || '').slice(0, 100);
-  const artist = (req.nextUrl.searchParams.get('artist') || '').slice(0, 80);
-  if (!key || !title || !artist) return NextResponse.json({ image: null }, { headers: { 'Cache-Control': 'no-store' } });
+  const title = clean(req.nextUrl.searchParams.get('title'), 100);
+  const artist = clean(req.nextUrl.searchParams.get('artist'), 80);
+  if (!title || !artist) return NextResponse.json({ image: null });
+
   try {
-    const url = new URL('https://ws.audioscrobbler.com/2.0/');
-    url.search = new URLSearchParams({ method: 'track.getInfo', api_key: key, artist, track: title, format: 'json' }).toString();
-    const response = await fetch(url, { next: { revalidate: 86400 } });
+    // Last.fm's public website exposes album artwork in its page metadata.
+    const search = new URL('https://www.last.fm/search');
+    search.searchParams.set('q', `${artist} ${title}`);
+    const response = await fetch(search, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; comforums/1.0)' },
+      redirect: 'follow',
+      next: { revalidate: 86400 },
+    });
     if (!response.ok) return NextResponse.json({ image: null });
-    const data = await response.json();
-    const images = data?.track?.album?.image || [];
-    const image = images.find((item) => item.size === 'extralarge')?.['#text'] || images.find((item) => item.size === 'large')?.['#text'] || null;
-    return NextResponse.json({ image }, { headers: { 'Cache-Control': 'public, max-age=3600' } });
+    const html = await response.text();
+
+    const candidates = [
+      /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i,
+      /<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i,
+    ];
+    let image = null;
+    for (const pattern of candidates) {
+      const match = html.match(pattern);
+      if (match?.[1]) {
+        image = match[1].replace(/&amp;/g, '&').replace(/&#x2F;/g, '/');
+        break;
+      }
+    }
+    if (image && /^https://(lastfm..fbsbx.com|lastfm.scdn.co|.*last.fm)/i.test(image)) {
+      return NextResponse.json({ image }, { headers: { 'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800' } });
+    }
+    return NextResponse.json({ image: null }, { headers: { 'Cache-Control': 'public, max-age=3600' } });
   } catch {
-    return NextResponse.json({ image: null });
+    return NextResponse.json({ image: null }, { headers: { 'Cache-Control': 'public, max-age=3600' } });
   }
 }
