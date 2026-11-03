@@ -17,12 +17,12 @@ export default async function Profiles({ searchParams }) {
     from users u
     where not u.is_banned and (${q ? sql`u.username like ${'%' + q + '%'} or coalesce(u.display_name, '') ilike ${'%' + q + '%'}` : sql`true`})
     order by
-      case when u.roles @> array['owner']::text[] then 7
+      case when u.roles @> array['owner']::text[] or u.role = 'owner' then 7
            when u.roles @> array['co_owner']::text[] then 6
-           when u.roles @> array['mod']::text[] then 5
-           when u.roles @> array['respected']::text[] then 4
-           when u.roles @> array['known']::text[] then 3
-           when u.roles @> array['rich']::text[] then 2 else 1 end desc,
+           when u.roles @> array['mod']::text[] or u.role = 'mod' then 5
+           when u.roles @> array['respected']::text[] or u.role = 'respected' then 4
+           when u.roles @> array['known']::text[] or u.role = 'known' then 3
+           when u.roles @> array['rich']::text[] or u.role = 'rich' then 2 else 1 end desc,
       u.created_at asc
     limit 100
   `;
@@ -51,7 +51,7 @@ export default async function Profiles({ searchParams }) {
             <div className="mt-3 min-h-10 text-[13px] leading-relaxed text-muted">{m.bio ? (m.bio.length > 90 ? m.bio.slice(0, 90) + '…' : m.bio) : 'No bio added yet.'}</div>
             <div className="mt-3 flex min-h-6 flex-wrap items-center gap-1.5">
               <RoleBadge role={m.role} roles={m.roles} />
-              {!m.roles?.some((r) => r !== 'member') && <span className="text-[11px] text-muted">Member</span>}
+              {m.role === 'member' && !m.roles?.some((r) => r !== 'member') && <span className="text-[11px] text-muted">Member</span>}
             </div>
             <div className="mt-3 flex items-center justify-between border-t border-line pt-3 text-[11px] text-muted">
               <span>Community activity</span><span className="tabular-nums">{fmt(m.activity || 0)}</span>
