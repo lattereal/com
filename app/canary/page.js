@@ -1,21 +1,19 @@
-export const metadata = { title: 'Transparency status' };
+export const metadata = { title: 'Transparency' };
 
-export default function Canary() {
+export default function Transparency() {
   return (
     <article className="prose-page">
       <p className="mb-2 text-xs uppercase tracking-widest text-muted">transparency</p>
-      <h1>Transparency status</h1>
-      <p>This page is reserved for signed transparency statements from the service operator.</p>
-      <section className="my-6 border-y border-line py-4">
-        <p className="text-xs uppercase tracking-widest text-muted">current publication status</p>
-        <p className="mt-2 font-medium">No verified, PGP-signed warrant canary is currently published.</p>
-        <p className="mt-2 text-sm text-muted">Do not interpret the presence, absence, or age of this page as a statement about whether the service has received a request, order, demand, or other communication.</p>
-      </section>
-      <h2>PGP verification</h2>
-      <p>A future statement will be verifiable only after the operator publishes an independently verified public key and its fingerprint, and signs each statement with the matching private key. The private key must be kept offline and must never be placed in this repository, Vercel environment variables, or the website database.</p>
-      <h2>What a canary can and cannot do</h2>
-      <p>A signed statement can help readers verify that a message was signed by the holder of a particular key and has not been altered. It does not prove that the statement is true, prevent legal process, guarantee anonymity, or protect the operator from lawsuits. The operator must not publish claims about legal requests unless those claims have been checked and approved by counsel.</p>
-      <p className="mt-8 border-t border-line pt-4 text-xs text-muted">No sample signature or third-party public key is used here. A real canary must be written, checked, signed, and periodically renewed by the operator using their own key.</p>
+      <h1>Transparency</h1>
+      <p>ComForums stores information needed to operate the community, maintain accounts, keep the service secure, and respond to abuse reports. We do not sell personal information.</p>
+      <h2>Data and retention</h2>
+      <p>Account details, profiles, posts, and threads are stored to provide the service. Chat messages and direct messages are automatically purged after 15 hours. Our hosting and database providers may process technical information, such as connection data and logs, to deliver and secure the service. This means we cannot claim that no data is ever collected or retained.</p>
+      <h2>Reports and safety</h2>
+      <p>Reports submitted through the site may be reviewed by moderators and administrators. We may remove reported content, restrict accounts, and preserve relevant information when needed to investigate serious abuse. Suspected illegal activity or credible threats may be referred to the appropriate authorities when required or appropriate under applicable law.</p>
+      <h2>Legal requests</h2>
+      <p>We may preserve or disclose information in response to valid legal process or where otherwise permitted or required by law. We will not claim that information does not exist when it does.</p>
+      <h2>Contact</h2>
+      <p>For questions or concerns, contact the ComForums team through our <a href="https://t.me/comforumscc" target="_blank" rel="noreferrer">Telegram channel</a>.</p>
     </article>
   );
 }
