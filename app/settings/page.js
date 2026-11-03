@@ -43,14 +43,15 @@ export default async function Settings() {
             {user.avatar_id && <form action={removeAvatar}><button className="text-[13px] text-muted hover:text-fg hover:underline">Remove photo</button></form>}
           </div>
         </div>
-      </Card>
-
-      <Card title="Banner" hint="wide images work best. png, jpg, gif or webp, up to 4 mb.">
-        {user.banner_id && <img src={`/m/${user.banner_id}`} alt="Current profile banner" className="mb-4 h-28 w-full rounded border border-line object-cover" />}
-        <ActionForm action={setBanner} label="Upload banner" wrapClass="flex flex-wrap items-center gap-3" footClass="">
-          <input name="file" type="file" required accept="image/png,image/jpeg,image/gif,image/webp" aria-label="Profile banner" className={fileCls} />
-        </ActionForm>
-        {user.banner_id && <form action={removeBanner} className="mt-3"><button className="text-[13px] text-muted hover:text-fg hover:underline">Remove banner</button></form>}
+        <div className="mt-6 border-t border-line pt-5">
+          <h3 className="mb-2 text-sm font-medium">profile banner</h3>
+          <p className="mb-3 text-xs text-muted">wide images work best · up to 4 mb.</p>
+          {user.banner_id && <img src={`/m/${user.banner_id}`} alt="Current profile banner" className="mb-3 h-24 w-full rounded border border-line object-cover" />}
+          <ActionForm action={setBanner} label="Upload banner" wrapClass="flex flex-wrap items-center gap-3" footClass="">
+            <input name="file" type="file" required accept="image/png,image/jpeg,image/gif,image/webp" aria-label="Profile banner" className={fileCls} />
+          </ActionForm>
+          {user.banner_id && <form action={removeBanner} className="mt-3"><button className="text-[13px] text-muted hover:text-fg hover:underline">Remove banner</button></form>}
+        </div>
       </Card>
 
       <Card title="Profile">
