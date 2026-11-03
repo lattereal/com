@@ -25,7 +25,7 @@ export default function Ranks() {
           <li>profile themes</li>
           <li>social links on your profile</li>
         </ul>
-        <p className="mt-3 text-sm text-muted">Want to ask about a rank? <a href="https://t.me/comforumscc" target="_blank" rel="noreferrer" className="underline underline-offset-4 hover:text-fg">contact us on Telegram</a>.</p>
+        <p className="mt-3 text-sm text-muted">Want to ask about a rank? <a href="https://t.me/comforumscom" target="_blank" rel="noreferrer" className="underline underline-offset-4 hover:text-fg">contact us on Telegram</a>.</p>
       </section>
     </div>
   );
