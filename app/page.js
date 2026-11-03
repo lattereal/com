@@ -24,7 +24,20 @@ export default async function Home() {
   const shown = isStaff(user) ? groups : groups.filter(([, list]) => list.length);
 
   return (
-    <div>
+    <div className="home-page">
+      <section className="relative mb-9 overflow-hidden rounded-xl border border-line bg-surface px-6 py-7 sm:px-8 sm:py-9">
+        <div className="pointer-events-none absolute -right-12 -top-24 h-64 w-64 rounded-full bg-indigo-500/10 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-28 left-1/3 h-52 w-52 rounded-full bg-blue-500/10 blur-3xl" />
+        <div className="relative">
+          <p className="mb-3 text-[11px] font-medium uppercase tracking-[.22em] text-[#a5a5ff]">your corner of the internet</p>
+          <h1 className="max-w-2xl text-3xl font-semibold tracking-tight sm:text-4xl">good conversations start here.</h1>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-muted">find a board, start a thread, or jump into a conversation with the community.</p>
+          <div className="mt-5 flex flex-wrap gap-2">
+            <Link href="/profiles" className="btn-primary">meet the community</Link>
+            <Link href="/ranks" className="btn-ghost">view ranks</Link>
+          </div>
+        </div>
+      </section>
       <div className="mb-8 flex items-baseline justify-between gap-4">
         <h2 className="text-xl font-semibold tracking-tight">browse boards</h2>
         {isStaff(user) && <Link href="/admin/categories" className="text-[13px] text-muted hover:text-fg">Manage categories</Link>}
@@ -50,10 +63,12 @@ export default async function Home() {
           </div>
         </section>
       ))}
-      <div className="stats-strip mt-9 grid grid-cols-3 gap-3 rounded-xl px-4 py-4 text-center sm:px-6">\n        <div><strong className="block text-xl sm:text-2xl">{fmt(s.members)}</strong><span className="mt-1 block text-[11px] text-muted">members</span></div>\n        <div><strong className="block text-xl sm:text-2xl">{fmt(s.threads)}</strong><span className="mt-1 block text-[11px] text-muted">threads</span></div>\n        <div><strong className="block text-xl sm:text-2xl">{fmt(s.posts)}</strong><span className="mt-1 block text-[11px] text-muted">replies</span></div>\n      </div>\n      <p className="mt-4 text-center text-[11px] text-muted">
-        {fmt(s.members)} members · {fmt(s.threads)} threads · {fmt(s.posts)} posts
-        {s.newest && <> · newest member: {s.newest}</>}
-      </p>
+      <div className="stats-strip mt-9 grid grid-cols-3 gap-3 rounded-xl px-4 py-4 text-center sm:px-6">
+        <div><strong className="block text-xl sm:text-2xl">{fmt(s.members)}</strong><span className="mt-1 block text-[11px] text-muted">members</span></div>
+        <div><strong className="block text-xl sm:text-2xl">{fmt(s.threads)}</strong><span className="mt-1 block text-[11px] text-muted">threads</span></div>
+        <div><strong className="block text-xl sm:text-2xl">{fmt(s.posts)}</strong><span className="mt-1 block text-[11px] text-muted">replies</span></div>
+      </div>
+      <p className="mt-4 text-center text-[11px] text-muted">{s.newest && <>newest member: {s.newest}</>}</p>
     </div>
   );
 }
