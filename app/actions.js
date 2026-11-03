@@ -113,7 +113,7 @@ export async function createThread(_, fd) {
 
 export async function createPost(_, fd) {
   const user = await getUser();
-  const err = await canPost(user, 'thread');
+  const err = await canPost(user, 'post');
   if (err) return { error: err };
 
   const threadId = Number(fd.get('thread'));
