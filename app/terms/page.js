@@ -5,7 +5,7 @@ export default function Terms() {
     <article className="prose-page">
       <p className="mb-2 text-xs uppercase tracking-widest text-muted">legal · last updated november 3, 2026</p>
       <h1>Terms of service</h1>
-      <p>These terms describe the basic conditions for accessing and using ComForums. They should be reviewed by a qualified lawyer and adapted to the operator's identity, location, and applicable law before the service is treated as legally complete.</p>
+      <p>These terms explain the basic conditions for using ComForums.</p>
       <h2>1. Eligibility and accounts</h2>
       <p>You must be legally permitted to use the service where you live. You are responsible for activity carried out through your account and for keeping your password confidential. Do not impersonate another person, misrepresent your identity, share access to your account, or attempt to bypass account restrictions.</p>
       <h2>2. Acceptable use</h2>
@@ -30,7 +30,6 @@ export default function Terms() {
       <p>You may stop using the service at any time. Access may be suspended or terminated for violations, security reasons, legal obligations, or operational reasons. Sections that by their nature should continue after termination may continue to apply, subject to applicable law.</p>
       <h2>12. Changes to these terms</h2>
       <p>These terms may be revised as the service changes. The revision date appears above. The operator should provide any notice required by applicable law.</p>
-      <p className="mt-8 border-t border-line pt-4 text-xs text-muted">This is a drafting baseline, not legal advice or a guarantee of protection from lawsuits. Have counsel review it and insert the operator's legal identity, jurisdiction, contact method, dispute process, and any mandatory consumer disclosures before relying on it.</p>
     </article>
   );
 }
