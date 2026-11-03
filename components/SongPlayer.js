@@ -20,7 +20,8 @@ export default function SongPlayer({ songs, accent = '#6366f1' }) {
   };
 
   return (
-    <div>
+    <div className="rounded-lg border border-line bg-bg/60 p-3">
+      <div className="mb-2 text-[10px] font-medium uppercase tracking-[.18em] text-muted">profile soundtrack</div>
       <audio
         ref={a}
         preload="none"
@@ -33,12 +34,12 @@ export default function SongPlayer({ songs, accent = '#6366f1' }) {
         {songs.map((s, i) => {
           const on = cur === i;
           return (
-            <li key={s.id} className="flex items-center gap-3 py-2">
+            <li key={s.id} className="flex items-center gap-3 rounded-md px-2 py-2.5 transition-colors hover:bg-surface">
               <button
                 onClick={() => play(i)}
                 aria-label={`${on && playing ? 'Pause' : 'Play'} ${s.title}`}
                 style={on ? { background: accent, color: '#0f0f11' } : undefined}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line text-fg transition-colors hover:border-[#3a3a3f]"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-line text-fg transition-colors hover:border-[#3a3a3f]"
               >
                 {on && playing ? <PauseIcon width={14} height={14} /> : <PlayIcon width={14} height={14} className="translate-x-px" />}
               </button>
