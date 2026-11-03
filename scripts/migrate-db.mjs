@@ -19,11 +19,10 @@ try {
   await sql`update users set roles = array[role]::text[] where roles is null or (roles = array['member']::text[] and role <> 'member')`;
   await sql`create index if not exists users_roles_gin_idx on users using gin (roles)`;
   await sql`alter table users add column if not exists banner_id uuid`;
-  await sql`do $ begin
-    if not exists (select 1 from pg_constraint where conname = 'users_banner_fk') then
-      alter table users add constraint users_banner_fk foreign key (banner_id) references media(id) on delete set null;
-    end if;
-  end $`;
+  const [bannerFk] = await sql`select exists (select 1 from pg_constraint where conname = 'users_banner_fk') as present`;
+  if (!bannerFk.present) {
+    await sql.unsafe('alter table users add constraint users_banner_fk foreign key (banner_id) references media(id) on delete set null');
+  }
   await sql`create table if not exists site_announcement (id smallint primary key default 1 check (id = 1), message text not null default '', enabled boolean not null default false, updated_at timestamptz not null default now(), updated_by uuid references users(id) on delete set null)`;
   await sql`insert into site_announcement (id, message, enabled) values (1, '', false) on conflict (id) do nothing`;
   console.log('Database migrations complete: roles, banners and announcements are ready.');
