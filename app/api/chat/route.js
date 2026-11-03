@@ -14,6 +14,15 @@ const sameOrigin = (req) => {
   try { return new URL(o).host === req.headers.get('host'); } catch { return false; }
 };
 
+async function purgeExpiredMessages() {
+  await sql`with expired as (
+    delete from chat_messages where created_at < now() - interval '15 hours' returning media_id
+  ) delete from media where id in (select media_id from expired where media_id is not null)`;
+  await sql`with expired as (
+    delete from dm_messages where created_at < now() - interval '15 hours' returning media_id
+  ) delete from media where id in (select media_id from expired where media_id is not null)`;
+}
+
 const COLS = (sql) => sql`
   m.id::int as id, m.body, m.created_at, m.media_id, md.mime,
   u.username, u.display_name, u.avatar_id, u.role, u.accent`;
@@ -64,7 +73,7 @@ export async function POST(req) {
   if (!sameOrigin(req)) return json({ error: 'Bad origin.' }, 403);
   const user = await getUser();
   if (!user || user.is_banned) return json({ error: 'Sign in.' }, 401);
-  const sc = await resolve(user, req.nextUrl.searchParams);
+  await purgeExpiredMessages();\n  const sc = await resolve(user, req.nextUrl.searchParams);
   if (!sc) return json({ error: 'Not found.' }, 404);
   if (!limit(`chat:${user.id}`, 12, 15 * 1000)) return json({ error: 'You are sending too fast.' }, 429);
 
