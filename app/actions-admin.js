@@ -158,7 +158,7 @@ export async function renameMember(fd) {
   if (!actor || !actor.roles?.includes('owner') || !UUID.test(uid)) return;
   if (!/^[a-z0-9_]{3,20}$/.test(username)) return back('/admin/members', 'Username must be 3–20 lowercase letters, numbers or underscores.');
   const [target] = await sql`select id, role, roles from users where id = ${uid}`;
-  if (!target || (target.id !== actor.id && (target.roles || [target.role]).includes('owner'))) return back('/admin/members', 'You cannot rename another owner.');
+  if (!target || (target.id !== actor.id && ((target.roles || []).includes('owner') || target.role === 'owner'))) return back('/admin/members', 'You cannot rename another owner.');
   if (target.id !== actor.id && !outranks(actor, target)) return back('/admin/members', 'You can only rename members below your rank.');
   try {
     await sql`update users set username = ${username} where id = ${uid}`;
