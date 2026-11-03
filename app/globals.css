@@ -48,3 +48,11 @@ body :not(pre):not(code) { text-transform: lowercase; }
 .profile-theme-rose { background: linear-gradient(145deg, #301923, #17171a 70%); }
 .profile-theme-forest { background: linear-gradient(145deg, #14251e, #17171a 70%); }
 .profile-theme-ocean { background: linear-gradient(145deg, #142536, #17171a 70%); }
+
+.premium-name { display: inline; }
+.premium-name-glow { text-shadow: 0 0 10px color-mix(in srgb, var(--name-color, currentColor) 65%, transparent); }
+.premium-name-gradient { background: linear-gradient(90deg, var(--name-color, #ff3b3b), #ffb1b1, var(--name-color, #ff3b3b)); background-clip: text; -webkit-background-clip: text; color: transparent !important; }
+.premium-name-shimmer { background: linear-gradient(100deg, var(--name-color, #ff3b3b) 20%, #fff 45%, var(--name-color, #ff3b3b) 70%); background-size: 220% auto; background-clip: text; -webkit-background-clip: text; color: transparent !important; animation: cf-name-shimmer 3s linear infinite; }
+.premium-name-star { display: inline-block; color: #ff5555; font-size: .78em; vertical-align: super; text-shadow: 0 0 7px currentColor; animation: cf-star-pulse 1.8s ease-in-out infinite; }
+@keyframes cf-name-shimmer { to { background-position: 220% center; } }
+@keyframes cf-star-pulse { 0%, 100% { opacity: .55; transform: scale(.85) rotate(-12deg); } 50% { opacity: 1; transform: scale(1.15) rotate(12deg); } }
