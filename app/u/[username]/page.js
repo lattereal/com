@@ -4,7 +4,7 @@ import { sql } from '@/lib/db';
 import { getUser } from '@/lib/auth';
 import { friendState } from '@/lib/friends';
 import { friendOp, createUpload } from '@/app/actions-social';
-import { List, ThreadRow, PostRow, THREAD_COLS } from '@/components/Rows';
+import { List, ThreadRow, THREAD_COLS } from '@/components/Rows';
 import Pagination from '@/components/Pagination';
 import Avatar from '@/components/Avatar';
 import RoleBadge from '@/components/RoleBadge';
@@ -50,19 +50,18 @@ function FriendButtons({ state, username }) {
 export default async function Profile({ params, searchParams }) {
   const viewer = await getUser();
   const [u] = await sql`
-    select id, username, display_name, bio, accent, avatar_id, role, roles, created_at, is_banned
+    select id, username, display_name, bio, accent, avatar_id, banner_id, role, roles, created_at, is_banned
     from users where username = ${params.username.toLowerCase()}`;
   if (!u) notFound();
 
   const own = viewer?.id === u.id;
-  const tab = ['posts', 'content'].includes(searchParams.tab) ? searchParams.tab : 'threads';
+  const tab = searchParams.tab === 'content' ? 'content' : 'threads';
   const page = Math.max(1, parseInt(searchParams.page) || 1);
 
-  const [[c], tags, songs, fs] = await Promise.all([
+  const [[c], songs, fs] = await Promise.all([
     sql`select (select count(*) from threads where author_id = ${u.id})::int as threads,
                (select count(*) from posts where author_id = ${u.id})::int as posts,
                (select count(*) from uploads where owner_id = ${u.id})::int as uploads`,
-    sql`select tag from profile_tags where user_id = ${u.id} order by tag`,
     sql`select id, title, artist, media_id from profile_songs where user_id = ${u.id} order by id`,
     viewer && !own && !viewer.is_banned ? friendState(viewer.id, u.id) : { status: 'none' },
   ]);
@@ -80,12 +79,14 @@ export default async function Profile({ params, searchParams }) {
                      join media m on m.id = up.media_id where up.owner_id = ${u.id} order by up.created_at desc limit 60`;
 
   const tabCls = (on) => `border-b-2 pb-2 text-sm ${on ? 'border-accent text-fg' : 'border-transparent text-muted hover:text-fg'}`;
-  const total = tab === 'threads' ? c.threads : c.posts;
+  const total = c.threads;
 
   return (
     <div>
       <section className="mb-8 overflow-hidden rounded border border-line bg-surface">
-        <div className="h-24" style={{ background: `linear-gradient(120deg, ${u.accent}47, ${u.accent}0d 75%)` }} />
+        <div className="relative h-32 sm:h-44" style={{ background: `linear-gradient(120deg, ${u.accent}47, ${u.accent}0d 75%)` }}>
+          {u.banner_id && <img src={`/m/${u.banner_id}`} alt="" className="absolute inset-0 h-full w-full object-cover" />}
+        </div>
         <div className="px-6 pb-6">
           <div className="-mt-10 flex items-end justify-between gap-4">
             <div className="rounded-full border-4 border-surface"><Avatar user={u} size={80} /></div>
@@ -103,17 +104,7 @@ export default async function Profile({ params, searchParams }) {
           <p className="mt-0.5 text-[13px] text-muted">
             @{u.username} · Joined {new Date(u.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })} · {fmt(c.threads + c.posts)} posts
           </p>
-          {u.bio && <p className="mt-4 max-w-[620px] whitespace-pre-wrap break-words text-[15px] leading-relaxed">{u.bio}</p>}
-          {tags.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-2">
-              {tags.map(({ tag }) => (
-                <Link key={tag} href={`/g/${tag}`} className="rounded-full border border-line px-3 py-1 text-[13px] text-muted transition-colors hover:border-[#3a3a3f] hover:text-fg">
-                  #{tag}
-                </Link>
-              ))}
-            </div>
-          )}
-        </div>
+          {u.bio && <p className="mt-4 max-w-[620px] whitespace-pre-wrap break-words text-[15px] leading-relaxed">{u.bio}</p>}        </div>
         {songs.length > 0 && (
           <div className="border-t border-line px-6 py-3">
             <SongPlayer accent={u.accent} songs={songs.map((s) => ({ id: s.id, title: s.title, artist: s.artist, src: `/m/${s.media_id}` }))} />
@@ -123,7 +114,6 @@ export default async function Profile({ params, searchParams }) {
 
       <div className="mb-4 flex gap-6 border-b border-line">
         <Link href={`/u/${u.username}`} className={tabCls(tab === 'threads')}>Threads</Link>
-        <Link href={`/u/${u.username}?tab=posts`} className={tabCls(tab === 'posts')}>Posts</Link>
         <Link href={`/u/${u.username}?tab=content`} className={tabCls(tab === 'content')}>Content{c.uploads ? ` · ${c.uploads}` : ''}</Link>
       </div>
 
@@ -176,7 +166,7 @@ export default async function Profile({ params, searchParams }) {
         </>
       ) : rows.length ? (
         <>
-          <List>{rows.map((r) => (tab === 'threads' ? <ThreadRow key={r.id} t={r} /> : <PostRow key={r.id} p={r} />))}</List>
+          <List>{rows.map((r) => <ThreadRow key={r.id} t={r} />)}</List>
           <Pagination page={page} pages={Math.ceil(total / PER)} base={`/u/${u.username}?tab=${tab}`} />
         </>
       ) : (
