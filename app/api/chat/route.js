@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import { getUser } from '@/lib/auth';
-import { limit } from '@/lib/ratelimit';
+import { limitPersistent } from '@/lib/ratelimit';
 import { saveMedia } from '@/lib/media';
 import { isMod } from '@/lib/roles';
 
@@ -77,7 +77,7 @@ export async function POST(req) {
   await purgeExpiredMessages();
   const sc = await resolve(user, req.nextUrl.searchParams);
   if (!sc) return json({ error: 'Not found.' }, 404);
-  if (!limit(`chat:${user.id}`, 12, 15 * 1000)) return json({ error: 'You are sending too fast.' }, 429);
+  if (!await limitPersistent(`chat:${user.id}`, 12, 15 * 1000)) return json({ error: 'You are sending too fast.' }, 429);
 
   let fd;
   try { fd = await req.formData(); } catch { return json({ error: 'Bad request.' }, 400); }
