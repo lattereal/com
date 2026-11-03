@@ -234,3 +234,16 @@ footer a:hover { color: #b8b8ff; }
 .profile-shell a:hover { text-decoration-color: var(--profile-accent); }
 .social-link img { opacity: .78; }
 .social-link:hover { border-color: var(--profile-accent); }
+
+/* Keep controls plain and restrained; no gradients, shine, glow or hover lift. */
+.btn, .input, .block-card { transition: border-color .12s ease, background-color .12s ease; }
+.btn-primary {
+  background: #6366f1 !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+.btn-primary::after { display: none !important; }
+.btn-primary:hover { background: #5558df !important; box-shadow: none !important; transform: none !important; }
+.btn-ghost:hover { transform: none !important; box-shadow: none !important; }
+.input:focus { box-shadow: none !important; }
