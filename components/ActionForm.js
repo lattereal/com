@@ -11,12 +11,12 @@ function Submit({ label, className }) {
   );
 }
 
-export default function ActionForm({ action, label, buttonClass = 'btn-primary', wrapClass = '', footClass = '', children }) {
+export default function ActionForm({ action, label, buttonClass = 'btn-primary', wrapClass = '', footClass = '', resetOnSuccess = true, children }) {
   const [state, formAction] = useFormState(action, null);
   const ref = useRef(null);
   useEffect(() => {
-    if (state?.ok) ref.current?.reset();
-  }, [state]);
+    if (resetOnSuccess && state?.ok) ref.current?.reset();
+  }, [state, resetOnSuccess]);
 
   return (
     <form ref={ref} action={formAction} className={wrapClass}>
