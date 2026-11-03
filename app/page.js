@@ -26,19 +26,19 @@ export default async function Home() {
   return (
     <div>
       <div className="mb-8 flex items-baseline justify-between gap-4">
-        <h1 className="text-2xl font-medium text-muted">Boards</h1>
+        <h2 className="text-xl font-semibold tracking-tight">browse boards</h2>
         {isStaff(user) && <Link href="/admin/categories" className="text-[13px] text-muted hover:text-fg">Manage categories</Link>}
       </div>
       {shown.map(([cat, list]) => (
         <section key={cat} className="mb-8">
-          <h2 className="mb-3 text-xs uppercase tracking-[0.5px] text-muted">{cat}</h2>
+          <h2 className="category-label mb-3 text-[11px] font-semibold uppercase text-muted">{cat}</h2>
           <div className="flex flex-col gap-2">
             {list.length === 0 && <p className="text-[13px] text-muted">No boards in this category yet.</p>}
             {list.map((b) => (
               <Link key={b.id} href={`/b/${b.slug}`}
-                className="flex items-center justify-between gap-6 rounded border border-line bg-surface p-5 transition-colors hover:border-[#3a3a3f] hover:bg-[#1a1a1e]">
+                className="board-card flex items-center justify-between gap-6 rounded-xl border border-line p-5">
                 <div className="min-w-0">
-                  <div className="text-base font-medium">{b.name}</div>
+                  <div className="text-base font-semibold tracking-tight">{b.name}</div>
                   <div className="mt-1 text-sm text-muted">{b.description}</div>
                 </div>
                 <div className="shrink-0 text-right text-[13px] text-muted tabular-nums">
@@ -50,7 +50,7 @@ export default async function Home() {
           </div>
         </section>
       ))}
-      <p className="mt-10 text-[13px] text-muted">
+      <div className="stats-strip mt-9 grid grid-cols-3 gap-3 rounded-xl px-4 py-4 text-center sm:px-6">\n        <div><strong className="block text-xl sm:text-2xl">{fmt(s.members)}</strong><span className="mt-1 block text-[11px] text-muted">members</span></div>\n        <div><strong className="block text-xl sm:text-2xl">{fmt(s.threads)}</strong><span className="mt-1 block text-[11px] text-muted">threads</span></div>\n        <div><strong className="block text-xl sm:text-2xl">{fmt(s.posts)}</strong><span className="mt-1 block text-[11px] text-muted">replies</span></div>\n      </div>\n      <p className="mt-4 text-center text-[11px] text-muted">
         {fmt(s.members)} members · {fmt(s.threads)} threads · {fmt(s.posts)} posts
         {s.newest && <> · newest member: {s.newest}</>}
       </p>
