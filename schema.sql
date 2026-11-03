@@ -18,6 +18,7 @@ alter table users add column if not exists display_name text;
 alter table users add column if not exists bio text not null default '';
 alter table users add column if not exists accent text not null default '#6366f1';
 alter table users add column if not exists avatar_id uuid;
+alter table users add column if not exists banner_id uuid;
 alter table users add column if not exists ip_hash text;   -- HMAC of the signup IP, never the raw IP
 
 do $$
@@ -53,6 +54,8 @@ create table if not exists media (
 
 alter table users drop constraint if exists users_avatar_fk;
 alter table users add constraint users_avatar_fk foreign key (avatar_id) references media(id) on delete set null;
+alter table users drop constraint if exists users_banner_fk;
+alter table users add constraint users_banner_fk foreign key (banner_id) references media(id) on delete set null;
 
 /* ---------- categories + boards ---------- */
 
