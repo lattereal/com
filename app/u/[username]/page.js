@@ -50,7 +50,7 @@ function FriendButtons({ state, username }) {
 export default async function Profile({ params, searchParams }) {
   const viewer = await getUser();
   const [u] = await sql`
-    select id, username, display_name, bio, accent, avatar_id, role, created_at, is_banned
+    select id, username, display_name, bio, accent, avatar_id, role, roles, created_at, is_banned
     from users where username = ${params.username.toLowerCase()}`;
   if (!u) notFound();
 
@@ -97,7 +97,7 @@ export default async function Profile({ params, searchParams }) {
 
           <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1">
             <h1 className="text-xl font-medium">{nameOf(u)}</h1>
-            <RoleBadge role={u.role} />
+            <RoleBadge role={u.role} roles={u.roles} />
             {u.is_banned && <span className="text-xs text-red-400">suspended</span>}
           </div>
           <p className="mt-0.5 text-[13px] text-muted">
