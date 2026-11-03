@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache';
 import bcrypt from 'bcryptjs';
 import { sql } from '@/lib/db';
 import { currentMember, addUnlock, clientIp } from '@/lib/auth';
-import { limit } from '@/lib/ratelimit';
+import { limitPersistent } from '@/lib/ratelimit';
 import { saveMedia } from '@/lib/media';
 import { isMod, userRoles } from '@/lib/roles';
 import { ACCENTS, UUID, cleanLine, cleanText } from '@/lib/util';
@@ -17,7 +17,7 @@ const MB = 1024 * 1024;
 
 async function addFriendInner(me, rawName) {
   const username = rawName.trim().toLowerCase().replace(/^@/, '');
-  if (!limit(`friend:${me.id}`, 10, 60 * 1000)) return { error: 'Slow down a little.' };
+  if (!await limitPersistent(`friend:${me.id}`, 10, 60 * 1000)) return { error: 'Slow down a little.' };
   const [t] = await sql`select id, username from users where username = ${username} and not is_banned`;
   if (!t) return { error: 'No member with that username.' };
   if (t.id === me.id) return { error: "You can't add yourself." };
@@ -74,7 +74,7 @@ export async function savePremiumProfile(_, fd) {
   const me = await currentMember();
   if (!me) return { error: 'Sign in first.' };
   if (!userRoles(me).some((r) => PREMIUM_ROLES.includes(r))) return { error: 'This customization is available to Rich, Respected, and Known members.' };
-  if (!limit(`premium-prof:${me.id}`, 8, 60 * 1000)) return { error: 'Slow down a little.' };
+  if (!await limitPersistent(`premium-prof:${me.id}`, 6, 60 * 1000)) return { error: 'Slow down a little.' };
 
   const rawColor = str(fd, 'name_color').trim();
   const nameColor = /^#[0-9a-fA-F]{6}$/.test(rawColor) ? rawColor : '#ff3b3b';
@@ -100,7 +100,7 @@ export async function savePremiumProfile(_, fd) {
 export async function saveProfile(_, fd) {
   const me = await currentMember();
   if (!me) return { error: 'Sign in first.' };
-  if (!limit(`prof:${me.id}`, 10, 60 * 1000)) return { error: 'Slow down a little.' };
+  if (!await limitPersistent(`prof:${me.id}`, 6, 60 * 1000)) return { error: 'Slow down a little.' };
 
   const display = cleanLine(str(fd, 'display_name'), 32) || null;
   const bio = cleanText(str(fd, 'bio'), 500);
@@ -113,7 +113,7 @@ export async function saveProfile(_, fd) {
 export async function setAvatar(_, fd) {
   const me = await currentMember();
   if (!me) return { error: 'Sign in first.' };
-  if (!limit(`up:${me.id}`, 10, 60 * 1000)) return { error: 'Slow down a little.' };
+  if (!await limitPersistent(`profile-media:${me.id}`, 5, 60 * 1000)) return { error: 'Slow down a little.' };
 
   const r = await saveMedia(fd.get('file'), me.id, ['image'], 2 * MB);
   if (r.error) return r;
@@ -137,7 +137,7 @@ export async function removeAvatar() {
 export async function setBanner(_, fd) {
   const me = await currentMember();
   if (!me) return { error: 'Sign in first.' };
-  if (!limit(`banner:${me.id}`, 5, 60 * 1000)) return { error: 'Slow down a little.' };
+  if (!await limitPersistent(`profile-media:${me.id}`, 5, 60 * 1000)) return { error: 'Slow down a little.' };
   const r = await saveMedia(fd.get('file'), me.id, ['image'], 4 * MB);
   if (r.error) return r;
   const [old] = await sql`select banner_id from users where id = ${me.id}`;
@@ -159,7 +159,7 @@ export async function removeBanner() {
 export async function addSong(_, fd) {
   const me = await currentMember();
   if (!me) return { error: 'Sign in first.' };
-  if (!limit(`up:${me.id}`, 10, 60 * 1000)) return { error: 'Slow down a little.' };
+  if (!await limitPersistent(`profile-media:${me.id}`, 5, 60 * 1000)) return { error: 'Slow down a little.' };
 
   const title = cleanLine(str(fd, 'title'), 80);
   const artist = cleanLine(str(fd, 'artist'), 60);
@@ -188,7 +188,7 @@ export async function deleteSong(fd) {
 export async function createUpload(_, fd) {
   const me = await currentMember();
   if (!me) return { error: 'Sign in first.' };
-  if (!limit(`up:${me.id}`, 10, 60 * 1000)) return { error: 'Slow down a little.' };
+  if (!await limitPersistent(`profile-media:${me.id}`, 5, 60 * 1000)) return { error: 'Slow down a little.' };
 
   const title = cleanLine(str(fd, 'title'), 100);
   const description = cleanText(str(fd, 'description'), 500);
@@ -226,7 +226,7 @@ export async function deleteUpload(fd) {
 export async function unlockContent(_, fd) {
   const id = str(fd, 'id');
   if (!UUID.test(id)) return { error: 'Not found.' };
-  if (!limit(`unlock:${clientIp()}:${id}`, 5, 10 * 60 * 1000))
+  if (!await limitPersistent(`unlock:${clientIp()}:${id}`, 5, 10 * 60 * 1000))
     return { error: 'Too many wrong attempts. Try again in a few minutes.' };
 
   const [c] = await sql`select pass_hash from uploads where id = ${id} and visibility = 'password'`;
