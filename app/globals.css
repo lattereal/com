@@ -224,3 +224,13 @@ footer a:hover { color: #b8b8ff; }
     transition-duration: .01ms !important;
   }
 }
+
+
+/* Profile owners choose the accent other members see on their page. */
+.profile-shell { --profile-accent: #6366f1; }
+.profile-shell .text-accent, .profile-shell .link { color: var(--profile-accent) !important; }
+.profile-shell .btn-primary { background: var(--profile-accent) !important; box-shadow: 0 4px 18px color-mix(in srgb, var(--profile-accent) 24%, transparent); }
+.profile-shell .border-accent { border-color: var(--profile-accent) !important; }
+.profile-shell a:hover { text-decoration-color: var(--profile-accent); }
+.social-link img { opacity: .78; }
+.social-link:hover { border-color: var(--profile-accent); }
