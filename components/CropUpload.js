@@ -48,9 +48,9 @@ export default function CropUpload({ action, label, aspect = 1, currentSrc, acce
     canvas.height = outH;
     const ctx = canvas.getContext('2d');
     ctx.drawImage(img, Math.max(0, Math.min(img.naturalWidth - cropW, sx)), Math.max(0, Math.min(img.naturalHeight - cropH, sy)), cropW, cropH, 0, 0, outW, outH);
-    const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.88));
     if (!blob) return;
-    const cropped = new File([blob], aspect === 1 ? 'avatar.png' : 'banner.png', { type: 'image/png' });
+    const cropped = new File([blob], aspect === 1 ? 'avatar.jpg' : 'banner.jpg', { type: 'image/jpeg' });
     const transfer = new DataTransfer();
     transfer.items.add(cropped);
     fileRef.current.files = transfer.files;
