@@ -37,3 +37,14 @@ body { color: #ededed; font-size: 14px; -webkit-font-smoothing: antialiased; }
 
 /* Consistent lowercase interface typography. */
 body :not(pre):not(code) { text-transform: lowercase; }
+
+
+/* premium profile presentation */
+.premium-name-glow { text-shadow: 0 0 10px color-mix(in srgb, var(--name-color, currentColor) 65%, transparent); }
+.premium-name-gradient { background: linear-gradient(90deg, var(--name-color, #a78bfa), #f0abfc, var(--name-color, #a78bfa)); background-clip: text; -webkit-background-clip: text; color: transparent !important; }
+.premium-name-shimmer { background: linear-gradient(100deg, var(--name-color, #a78bfa) 20%, #fff 45%, var(--name-color, #a78bfa) 70%); background-size: 220% auto; background-clip: text; -webkit-background-clip: text; color: transparent !important; animation: cf-name-shimmer 3s linear infinite; }
+@keyframes cf-name-shimmer { to { background-position: 220% center; } }
+.profile-theme-midnight { background: linear-gradient(145deg, #111827, #17171a 65%); }
+.profile-theme-rose { background: linear-gradient(145deg, #301923, #17171a 70%); }
+.profile-theme-forest { background: linear-gradient(145deg, #14251e, #17171a 70%); }
+.profile-theme-ocean { background: linear-gradient(145deg, #142536, #17171a 70%); }
