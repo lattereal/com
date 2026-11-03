@@ -23,7 +23,7 @@ export default function AccountMenu({ user, isModerator, isStaffMember }) {
         {isModerator && <div className="my-1 border-t border-line pt-1">
           <Link href="/admin/reports" onClick={close} className={item}>Reports</Link>
           <Link href="/admin/members" onClick={close} className={item}>Members</Link>
-          {isStaffMember && <Link href="/admin/categories" onClick={close} className={item}>Categories</Link>}
+          {isStaffMember && <><Link href="/admin/categories" onClick={close} className={item}>Categories</Link><Link href="/admin/announcements" onClick={close} className={item}>Announcement</Link></>}
         </div>}
         <form action={logout} className="mt-1 border-t border-line pt-1">
           <button onClick={close} className={`${item} w-full text-left`}>Sign out</button>
