@@ -81,7 +81,7 @@ export default async function Members({ searchParams }) {
                   </ActionForm>
                 </div>
               </div>}
-              {owner && !targetIsOwner && r.id !== actor.id && <div className="mt-4 grid gap-3 border-t border-line pt-4 sm:grid-cols-2">
+              {owner && (!targetIsOwner || r.id === actor.id) && <div className="mt-4 grid gap-3 border-t border-line pt-4 sm:grid-cols-2">
                 <form action={renameMember} className="flex flex-wrap items-end gap-2">
                   <input type="hidden" name="uid" value={r.id} />
                   <label className="min-w-0 flex-1 text-xs text-muted">Change username
@@ -89,7 +89,7 @@ export default async function Members({ searchParams }) {
                   </label>
                   <button className="btn-ghost">Update</button>
                 </form>
-                <form action={deleteMember} className="flex flex-wrap items-end gap-2">
+                {r.id !== actor.id && <form action={deleteMember} className="flex flex-wrap items-end gap-2">
                   <input type="hidden" name="uid" value={r.id} />
                   <label className="min-w-0 flex-1 text-xs text-muted">Type DELETE to confirm
                     <input name="confirm" required placeholder="DELETE" className="input mt-1" />
