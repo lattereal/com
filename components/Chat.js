@@ -19,8 +19,6 @@ function Attachment({ m }) {
   return <audio src={src} controls preload="none" className="mt-1.5 h-9 w-72 max-w-full" />;
 }
 
-// Shared by the public lounge (endpoint "/api/chat") and friend DMs ("/api/chat?dm=name").
-// Live updates come from polling every 2.5s, which works on Vercel without a websocket server.
 export default function Chat({ endpoint, me, canModerate = false, placeholder = 'Message…' }) {
   const [msgs, setMsgs] = useState([]);
   const [text, setText] = useState('');
@@ -137,78 +135,38 @@ export default function Chat({ endpoint, me, canModerate = false, placeholder = 
 
   return (
     <div className="flex h-[calc(100dvh-15rem)] min-h-[420px] flex-col rounded border border-line bg-surface">
-      <div
-        ref={box}
-        onScroll={(e) => { const t = e.currentTarget; stick.current = t.scrollHeight - t.scrollTop - t.clientHeight < 80; }}
-        className="flex-1 overflow-y-auto px-4 py-4"
-      >
+      <div ref={box} onScroll={(e) => { const t = e.currentTarget; stick.current = t.scrollHeight - t.scrollTop - t.clientHeight < 80; }} className="flex-1 overflow-y-auto px-4 py-4">
         {!msgs.length && <p className="py-10 text-center text-muted">No messages yet. Say hi.</p>}
         {msgs.map((m, i) => {
           const prev = msgs[i - 1];
+          const next = msgs[i + 1];
           const joined = prev && prev.username === m.username && new Date(m.created_at) - new Date(prev.created_at) < 5 * 60 * 1000;
+          const continues = next && next.username === m.username && new Date(next.created_at) - new Date(m.created_at) < 5 * 60 * 1000;
           const mine = m.username === me;
           return (
             <div key={m.id} className={`group flex gap-3 ${joined ? 'mt-0.5' : 'mt-4 first:mt-0'}`}>
               <div className="w-8 shrink-0">{!joined && <Avatar user={m} size={32} />}</div>
               <div className="min-w-0 flex-1">
-                {!joined && (
-                  <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
-                    <Link href={`/u/${m.username}`} className="text-sm font-medium hover:underline">{m.display_name || m.username}</Link>
-                    {m.display_name && <span className="text-xs text-muted">@{m.username}</span>}
-                    <RoleBadge role={m.role} />
-                    <span className="text-xs text-muted">{clock(m.created_at)}</span>
-                  </div>
-                )}
+                {!joined && <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5"><Link href={`/u/${m.username}`} className="text-sm font-medium hover:underline">{m.display_name || m.username}</Link>{m.display_name && <span className="text-xs text-muted">@{m.username}</span>}<RoleBadge role={m.role} /><span className="text-xs text-muted">{clock(m.created_at)}</span></div>}
                 {m.body && <p className="whitespace-pre-wrap break-words text-[15px] leading-relaxed">{m.body}</p>}
-                <span className="mt-0.5 block text-[10px] text-muted">{new Date(m.created_at).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</span>
+                {!continues && <span className="mt-0.5 block text-[10px] text-muted">{new Date(m.created_at).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</span>}
                 <Attachment m={m} />
               </div>
-              {(mine || canModerate) && (
-                <button onClick={() => remove(m.id)} className="self-start text-xs text-muted opacity-0 transition-opacity hover:text-red-400 focus:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100">
-                  Delete
-                </button>
-              )}
+              {(mine || canModerate) && <button onClick={() => remove(m.id)} className="self-start text-xs text-muted opacity-0 hover:text-red-400 focus:opacity-100 group-hover:opacity-100 [@media(hover:none)]:opacity-100">Delete</button>}
             </div>
           );
         })}
       </div>
-
       <div className="border-t border-line px-3 py-2 text-center text-[11px] text-muted">messages and attachments are automatically deleted after 15 hours.</div>
       <div className="border-t border-line p-3">
         {err && <p role="alert" className="mb-2 text-[13px] text-red-400">{err}</p>}
-        {file && (
-          <div className="mb-2 flex items-center gap-2 text-[13px] text-muted">
-            <span className="truncate rounded border border-line bg-bg px-2 py-1">{file.name.startsWith('voice.') ? 'Voice note ready' : file.name}</span>
-            <button onClick={() => setFile(null)} className="hover:text-fg">Remove</button>
-          </div>
-        )}
+        {file && <div className="mb-2 flex items-center gap-2 text-[13px] text-muted"><span className="truncate rounded border border-line bg-bg px-2 py-1">{file.name.startsWith('voice.') ? 'Voice note ready' : file.name}</span><button onClick={() => setFile(null)} className="hover:text-fg">Remove</button></div>}
         <div className="flex items-end gap-2">
           <input ref={fileInput} type="file" accept="image/png,image/jpeg,image/gif,image/webp,audio/*,video/mp4,video/webm" onChange={pick} className="hidden" />
-          <button type="button" onClick={() => fileInput.current?.click()} aria-label="Attach a file" className="btn-ghost h-10 w-10 shrink-0 px-0">
-            <ClipIcon width={16} height={16} />
-          </button>
-          {rec === null ? (
-            <button type="button" onClick={startRec} aria-label="Record a voice note" className="btn-ghost h-10 w-10 shrink-0 px-0">
-              <MicIcon width={16} height={16} />
-            </button>
-          ) : (
-            <button type="button" onClick={stopRec} aria-label="Stop recording" className="btn-ghost h-10 shrink-0 gap-2 border-red-400/40 px-3 text-red-400">
-              <StopIcon width={12} height={12} /> {mmss(rec)}
-            </button>
-          )}
-          <textarea
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }}
-            maxLength={2000}
-            rows={1}
-            placeholder={placeholder}
-            aria-label="Message"
-            className="max-h-32 min-h-10 flex-1 resize-none rounded border border-line bg-bg px-3 py-2 text-[15px] placeholder:text-muted focus:border-accent focus:outline-none"
-          />
-          <button type="button" onClick={send} disabled={sending} aria-label="Send" className="btn-primary h-10 w-10 shrink-0 px-0">
-            <SendIcon width={16} height={16} />
-          </button>
+          <button type="button" onClick={() => fileInput.current?.click()} aria-label="Attach a file" className="btn-ghost h-10 w-10 shrink-0 px-0"><ClipIcon width={16} height={16} /></button>
+          {rec === null ? <button type="button" onClick={startRec} aria-label="Record a voice note" className="btn-ghost h-10 w-10 shrink-0 px-0"><MicIcon width={16} height={16} /></button> : <button type="button" onClick={stopRec} aria-label="Stop recording" className="btn-ghost h-10 shrink-0 gap-2 border-red-400/40 px-3 text-red-400"><StopIcon width={12} height={12} /> {mmss(rec)}</button>}
+          <textarea value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } }} maxLength={2000} rows={1} placeholder={placeholder} aria-label="Message" className="max-h-32 min-h-10 flex-1 resize-none rounded border border-line bg-bg px-3 py-2 text-[15px] placeholder:text-muted focus:border-accent focus:outline-none" />
+          <button type="button" onClick={send} disabled={sending} aria-label="Send" className="btn-primary h-10 w-10 shrink-0 px-0"><SendIcon width={16} height={16} /></button>
         </div>
       </div>
     </div>
