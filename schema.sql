@@ -19,6 +19,10 @@ alter table users add column if not exists bio text not null default '';
 alter table users add column if not exists accent text not null default '#6366f1';
 alter table users add column if not exists avatar_id uuid;
 alter table users add column if not exists banner_id uuid;
+alter table users add column if not exists name_color text not null default '';
+alter table users add column if not exists name_effect text not null default 'none';
+alter table users add column if not exists profile_theme text not null default 'default';
+alter table users add column if not exists socials jsonb not null default '{}'::jsonb;
 alter table users add column if not exists ip_hash text;   -- HMAC of the signup IP, never the raw IP
 
 do $$
