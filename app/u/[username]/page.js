@@ -35,7 +35,7 @@ export default async function Profile({ params, searchParams }) {
   const [u] = await sql`select id, username, display_name, bio, accent, avatar_id, banner_id, role, roles, name_color, name_effect, profile_theme, socials, created_at, is_banned from users where username = ${params.username.toLowerCase()}`;
   if (!u) notFound();
   const own = viewer?.id === u.id;
-  const premium = userRoles(u).some((r) => ['rich', 'respected', 'known'].includes(r));
+  const premium = userRoles(u).some((r) => ['rich', 'respected', 'known', 'owner'].includes(r));
   const theme = premium && ['midnight', 'rose', 'forest', 'ocean'].includes(u.profile_theme) ? u.profile_theme : 'default';
   const socials = premium && u.socials && typeof u.socials === 'object' ? Object.entries(u.socials).filter(([, url]) => typeof url === 'string' && /^https?:\/\//i.test(url)) : [];
   const tab = searchParams.tab === 'content' ? 'content' : 'threads';
