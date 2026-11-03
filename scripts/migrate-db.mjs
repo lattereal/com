@@ -19,8 +19,11 @@ try {
   await sql`update users set roles = array[role]::text[] where roles is null or (roles = array['member']::text[] and role <> 'member')`;
   await sql`create index if not exists users_roles_gin_idx on users using gin (roles)`;
   await sql`alter table users add column if not exists banner_id uuid`;
-  await sql`alter table users drop constraint if exists users_banner_fk`;
-  await sql`alter table users add constraint users_banner_fk foreign key (banner_id) references media(id) on delete set null`;
+  await sql`do $ begin
+    if not exists (select 1 from pg_constraint where conname = 'users_banner_fk') then
+      alter table users add constraint users_banner_fk foreign key (banner_id) references media(id) on delete set null;
+    end if;
+  end $`;
   console.log('Database migrations complete: roles and profile banners are ready.');
 } finally {
   await sql.end();
