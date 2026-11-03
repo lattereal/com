@@ -145,3 +145,42 @@ export async function resetPassword(_, fd) {
   await sql`update users set password_hash = ${await bcrypt.hash(temp, 12)} where id = ${uid}`;
   return { ok: true, message: `Temporary password for @${t.username}: ${temp} (send it privately; they can change it in Settings)` };
 }
+
+
+/* ---------- owner account controls ---------- */
+export async function renameMember(fd) {
+  const actor = await getUser();
+  const uid = str(fd, 'uid');
+  const username = str(fd, 'username').trim().toLowerCase();
+  if (!actor || !actor.roles?.includes('owner') || !UUID.test(uid)) return;
+  if (!/^[a-z0-9_]{3,20}$/.test(username)) return back('/admin/members', 'Username must be 3–20 lowercase letters, numbers or underscores.');
+  const [target] = await sql`select id, role, roles from users where id = ${uid}`;
+  if (!target || (target.id !== actor.id && (target.roles || [target.role]).includes('owner'))) return back('/admin/members', 'You cannot rename another owner.');
+  if (target.id !== actor.id && !outranks(actor, target)) return back('/admin/members', 'You can only rename members below your rank.');
+  try {
+    await sql`update users set username = ${username} where id = ${uid}`;
+  } catch (e) {
+    if (e.code === '23505') return back('/admin/members', 'That username is already taken.');
+    throw e;
+  }
+  revalidatePath('/', 'layout');
+  redirect('/admin/members?msg=' + encodeURIComponent('Username updated.'));
+}
+
+export async function deleteMember(fd) {
+  const actor = await getUser();
+  const uid = str(fd, 'uid');
+  if (!actor || !actor.roles?.includes('owner') || !UUID.test(uid) || uid === actor.id) return;
+  const [target] = await sql`select id, role, roles from users where id = ${uid}`;
+  if (!target || (target.roles || [target.role]).includes('owner')) return back('/admin/members', 'Owner accounts cannot be deleted here.');
+  await sql.begin(async (tx) => {
+    await tx`delete from threads where author_id = ${uid}`;
+    await tx`delete from posts where author_id = ${uid}`;
+    await tx`delete from reports where reporter_id = ${uid}`;
+    await tx`delete from friendships where requester_id = ${uid} or addressee_id = ${uid}`;
+    await tx`delete from dm_messages where sender_id = ${uid} or recipient_id = ${uid}`;
+    await tx`delete from chat_messages where author_id = ${uid}`;
+    await tx`delete from users where id = ${uid}`;
+  });
+  back('/admin/members', 'Account and associated content deleted.');
+}
