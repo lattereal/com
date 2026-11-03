@@ -22,11 +22,8 @@ export default async function Profiles({ searchParams }) {
     where not u.is_banned and (${q ? sql`u.username ilike ${'%' + q + '%'} or coalesce(u.display_name, '') ilike ${'%' + q + '%'}` : sql`true`})
     order by u.created_at asc limit 500
   `;
-  const roleOf = (m) => {
-    const rs = [...new Set([...(Array.isArray(m.roles) ? m.roles : []), m.role || 'member'])];
-    return [...groups].reverse().find(([key]) => rs.includes(key))?.[0] || 'member';
-  };
-  const filtered = groups.map(([key, label]) => ({ key, label, people: members.filter((m) => roleOf(m) === key) })).filter((g) => g.people.length);
+  const rolesFor = (m) => [...new Set([...(Array.isArray(m.roles) ? m.roles : []), m.role || 'member'])];
+  const filtered = groups.map(([key, label]) => ({ key, label, people: members.filter((m) => rolesFor(m).includes(key) && (key !== 'member' || !rolesFor(m).some((r) => r !== 'member'))) })).filter((g) => g.people.length);
   return (
     <div className="mx-auto max-w-[1000px]">
       <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
