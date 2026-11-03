@@ -17,9 +17,9 @@ export default async function Nav({ user }) {
         <nav aria-label="Main navigation" className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <Link href="/" className={navLink}>Boards</Link>
           <Link href="/profiles" className={navLink}>Profiles</Link>
-          <Link href="/chat" className={navLink}>Chat</Link>
-          <Link href="/g" className={navLink}>Groups</Link>
           {user && <>
+            <Link href="/chat" className={navLink}>Chat</Link>
+            <Link href="/g" className={navLink}>Groups</Link>
             <Link href="/messages" className={navLink}>Messages</Link>
             <Link href="/friends" className={navLink}>
               Friends{pending > 0 && <span className="ml-1.5 rounded-full bg-accent px-1.5 py-0.5 text-[10px] text-white">{pending}</span>}
