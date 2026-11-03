@@ -1,6 +1,6 @@
 'use client';
-import { useRef, useState } from 'react';
-import { PlayIcon, PauseIcon } from './Icons';
+import { useEffect, useRef, useState } from 'react';
+import { PlayIcon, PauseIcon, MusicIcon } from './Icons';
 
 const t = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 
@@ -10,6 +10,17 @@ export default function SongPlayer({ songs, accent = '#6366f1' }) {
   const [cur, setCur] = useState(null);
   const [playing, setPlaying] = useState(false);
   const [time, setTime] = useState({ pos: 0, dur: 0 });
+  const [cover, setCover] = useState(null);
+
+  useEffect(() => {
+    if (cur === null) { setCover(null); return; }
+    let active = true;
+    const song = songs[cur];
+    setCover(null);
+    fetch(`/api/lastfm?title=${encodeURIComponent(song.title)}&artist=${encodeURIComponent(song.artist || '')}`, { cache: 'force-cache' })
+      .then((r) => r.json()).then((data) => { if (active) setCover(data.image || null); }).catch(() => {});
+    return () => { active = false; };
+  }, [cur, songs]);
 
   const play = (i) => {
     const el = a.current;
@@ -43,6 +54,7 @@ export default function SongPlayer({ songs, accent = '#6366f1' }) {
               >
                 {on && playing ? <PauseIcon width={14} height={14} /> : <PlayIcon width={14} height={14} className="translate-x-px" />}
               </button>
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-md border border-line bg-surface">{on && cover ? <img src={cover} alt="" className="h-full w-full object-cover" /> : <MusicIcon width={15} height={15} className="text-muted" />}</div>
               <div className="min-w-0 flex-1">
                 <div className="truncate text-sm font-medium">{s.title}</div>
                 {on ? (
