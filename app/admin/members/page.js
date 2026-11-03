@@ -26,7 +26,7 @@ export default async function Members({ searchParams }) {
   const roles = assignable(actor);
   return (
     <div className="mx-auto max-w-[900px]">
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-3 border-b border-line pb-5">
         <div><p className="mb-1 text-xs uppercase tracking-widest text-muted">Administration</p><h1 className="text-2xl font-semibold">Members</h1>
           <p className="mt-1 text-sm text-muted">Manage accounts, permissions and community access.</p></div>
         <span className="text-xs text-muted">{rows.length} shown</span>
@@ -42,7 +42,7 @@ export default async function Members({ searchParams }) {
           const assigned = [...new Set([...(Array.isArray(r.roles) ? r.roles : []), r.role || 'member'])];
           const targetIsOwner = assigned.includes('owner');
           return (
-            <section key={r.id} className="rounded-xl border border-line bg-surface p-4">
+            <section key={r.id} className="border-b border-line py-4">
               <div className="flex flex-wrap items-center gap-3">
                 <Avatar user={r} size={42} />
                 <div className="min-w-0 flex-1">
@@ -60,16 +60,16 @@ export default async function Members({ searchParams }) {
                 </form>}
               </div>
               {below && isStaff(actor) && <div className="mt-4 grid gap-4 border-t border-line pt-4 lg:grid-cols-2">
-                <form action={setRoles} className="rounded-lg border border-line/70 p-3">
+                <form action={setRoles} className="border-l border-line pl-4">
                   <input type="hidden" name="uid" value={r.id} />
-                  <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">Assigned roles</div>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="mb-2 text-[11px] font-medium tracking-wide text-muted">permissions</div>
+                  <div className="flex flex-wrap gap-x-4 gap-y-2">
                     {roles.map((role) => <label key={role} className="flex items-center gap-2 text-sm">
-                      <input type="checkbox" name="roles" value={role} defaultChecked={assigned.includes(role)} className="accent-[#8587f5]" />
+                      <input type="checkbox" name="roles" value={role} defaultChecked={assigned.includes(role)} className="accent-white" />
                       {LABEL[role]}
                     </label>)}
                   </div>
-                  <button className="btn-primary mt-3">Save roles</button>
+                  <button className="btn-ghost mt-3">Save roles</button>
                 </form>
                 <div className="space-y-2">
                   <form action={releaseIp}>
