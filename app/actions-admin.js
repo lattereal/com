@@ -175,7 +175,7 @@ export async function deleteMember(fd) {
   const uid = str(fd, 'uid');
   if (!actor || !actor.roles?.includes('owner') || !UUID.test(uid) || uid === actor.id || str(fd, 'confirm') !== 'DELETE') return;
   const [target] = await sql`select id, role, roles from users where id = ${uid}`;
-  if (!target || (target.roles || [target.role]).includes('owner')) return back('/admin/members', 'Owner accounts cannot be deleted here.');
+  if (!target || ((target.roles || []).includes('owner') || target.role === 'owner')) return back('/admin/members', 'Owner accounts cannot be deleted here.');
   await sql.begin(async (tx) => {
     await tx`delete from threads where author_id = ${uid}`;
     await tx`delete from posts where author_id = ${uid}`;
