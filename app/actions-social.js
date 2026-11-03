@@ -51,6 +51,7 @@ export async function addFriend(_, fd) {
 export async function friendOp(fd) {
   const me = await currentMember();
   if (!me) return;
+  if (!await limitPersistent(`friend-op:${me.id}`, 20, 60 * 1000)) return;
   const op = str(fd, 'op');
   const id = Number(fd.get('id'));
 
