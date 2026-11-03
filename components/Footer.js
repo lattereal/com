@@ -9,7 +9,6 @@ export default function Footer() {
           <Link href="/rules" className="hover:text-fg">Rules</Link>
           <Link href="/privacy" className="hover:text-fg">Privacy</Link>
           <Link href="/terms" className="hover:text-fg">Terms</Link>
-          <Link href="/canary" className="hover:text-fg">Transparency</Link>
         </nav>
       </div>
     </footer>
