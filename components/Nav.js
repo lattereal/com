@@ -10,7 +10,7 @@ export default async function Nav({ user }) {
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-bg/95 backdrop-blur">
       <div className="mx-auto flex min-h-14 max-w-[1100px] items-center gap-3 px-4 sm:px-5">
-        <Link href="/" className="shrink-0 text-[15px] font-semibold tracking-tight">ComForums</Link>
+        <Link href="/" className="shrink-0 text-[15px] font-semibold tracking-tight">comforums.com</Link>
         <nav aria-label="Main navigation" className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <Link href="/" className={navLink}>Boards</Link>
           <Link href="/profiles" className={navLink}>Profiles</Link>
