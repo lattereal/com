@@ -172,7 +172,8 @@ export default function Chat({ endpoint, me, canModerate = false, placeholder = 
         })}
       </div>
 
-      <div className="border-t border-line px-3 py-2 text-center text-[11px] text-muted">messages and attachments are automatically deleted after 15 hours.</div>\n      <div className="border-t border-line p-3">
+      <div className="border-t border-line px-3 py-2 text-center text-[11px] text-muted">messages and attachments are automatically deleted after 15 hours.</div>
+      <div className="border-t border-line p-3">
         {err && <p role="alert" className="mb-2 text-[13px] text-red-400">{err}</p>}
         {file && (
           <div className="mb-2 flex items-center gap-2 text-[13px] text-muted">
