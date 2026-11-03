@@ -21,7 +21,7 @@ export default function Privacy() {
       <h2>legal requests</h2>
       <p>We may preserve or share information when required by valid legal process or when the law allows it.</p>
       <h2>contact</h2>
-      <p>For privacy questions, contact us through the <a href="https://t.me/comforumscc" target="_blank" rel="noreferrer">ComForums Telegram channel</a>.</p>
+      <p>For privacy questions, contact us through the <a href="https://t.me/comforumscom" target="_blank" rel="noreferrer">ComForums Telegram channel</a>.</p>
     </article>
   );
 }
