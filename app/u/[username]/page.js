@@ -55,7 +55,7 @@ export default async function Profile({ params, searchParams }) {
         <div className="relative isolate h-32 overflow-hidden bg-[#141416] sm:h-44" style={{ background: `linear-gradient(120deg, ${u.accent}47, ${u.accent}0d 75%)` }}>
           {u.banner_id && <img src={`/m/${u.banner_id}`} alt="" className="absolute inset-0 z-0 h-full w-full object-cover" />}
         </div>
-        <div className="relative z-10 bg-surface px-6 pb-6">
+        <div className="relative z-10 px-6 pb-6">
           <div className="-mt-10 flex items-end justify-between gap-4">
             <div className="h-[88px] w-[88px] shrink-0 overflow-hidden rounded-full border-4 border-surface bg-surface"><Avatar user={u} size={80} /></div>
             <div className="flex flex-wrap justify-end gap-2 pb-1">{own && <Link href="/settings" className="btn-ghost">edit profile</Link>}{viewer && !own && !viewer.is_banned && <FriendButtons state={fs} username={u.username} />}</div>
