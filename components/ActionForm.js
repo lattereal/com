@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { useFormState, useFormStatus } from 'react-dom';
 
 function Submit({ label, className }) {
@@ -13,10 +14,12 @@ function Submit({ label, className }) {
 
 export default function ActionForm({ action, label, buttonClass = 'btn-primary', wrapClass = '', footClass = '', resetOnSuccess = true, children }) {
   const [state, formAction] = useFormState(action, null);
+  const router = useRouter();
   const ref = useRef(null);
   useEffect(() => {
     if (resetOnSuccess && state?.ok) ref.current?.reset();
-  }, [state, resetOnSuccess]);
+    if (state?.ok) router.refresh();
+  }, [state, resetOnSuccess, router]);
 
   return (
     <form ref={ref} action={formAction} className={wrapClass}>
@@ -27,7 +30,7 @@ export default function ActionForm({ action, label, buttonClass = 'btn-primary',
         </p>
       )}
       {state?.message && (
-        <p role="status" className="mt-3 break-words text-[13px] text-emerald-400">
+        <p role="status" className="mt-3 break-words text-[13px] text-accent">
           {state.message}
         </p>
       )}
