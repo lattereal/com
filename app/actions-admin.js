@@ -134,6 +134,8 @@ export async function releaseIp(fd) {
   const actor = await staff();
   const uid = str(fd, 'uid');
   if (!actor || !UUID.test(uid)) return;
+  const [target] = await sql`select id, role, roles from users where id = ${uid}`;
+  if (!target || !outranks(actor, target)) return back('/admin/members', 'You can only release IP locks for members below your rank.');
   await sql`update users set ip_hash = null where id = ${uid}`;
   back('/admin/members', 'IP lock released. A new account can now register from that network.');
 }
