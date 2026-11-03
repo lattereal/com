@@ -116,15 +116,18 @@ export async function deleteBoard(fd) {
 
 /* ---------- members (co-owner, owner) ---------- */
 
-export async function setRole(fd) {
+export async function setRoles(fd) {
   const actor = await staff();
   const uid = str(fd, 'uid');
-  const role = str(fd, 'role');
   if (!actor || !UUID.test(uid)) return;
-  const [t] = await sql`select role from users where id = ${uid}`;
-  // only roles below your own, and only on people below you
-  if (t && outranks(actor, t) && assignable(actor).includes(role)) await sql`update users set role = ${role} where id = ${uid}`;
-  back('/admin/members', 'Role updated.');
+  const [target] = await sql`select id, role, roles from users where id = ${uid}`;
+  if (!target || !outranks(actor, target)) return back('/admin/members', 'You can only change roles for members below your rank.');
+  const allowed = assignable(actor);
+  const requested = [...new Set(fd.getAll('roles').map(String).filter((r) => allowed.includes(r)))];
+  const roles = requested.length ? requested : ['member'];
+  const highest = roles.reduce((best, r) => ['member','rich','known','respected','mod','co_owner','owner'].indexOf(r) > ['member','rich','known','respected','mod','co_owner','owner'].indexOf(best) ? r : best, 'member');
+  await sql`update users set roles = ${roles}, role = ${highest} where id = ${uid}`;
+  back('/admin/members', 'Roles updated.');
 }
 
 export async function releaseIp(fd) {
