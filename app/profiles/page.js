@@ -27,7 +27,7 @@ export default async function Profiles({ searchParams }) {
   return (
     <div className="mx-auto max-w-[1000px]">
       <div className="mb-7 flex flex-wrap items-end justify-between gap-4">
-        <div><p className="mb-1 text-xs uppercase tracking-widest text-muted">community</p><h1 className="text-2xl font-semibold">profiles</h1></div>
+        <div><h1 className="text-2xl font-semibold">profiles</h1></div>
         <form className="flex w-full gap-2 sm:w-auto">
           <input name="q" defaultValue={searchParams?.q || ''} placeholder="search members" aria-label="search members" className="input sm:w-64" />
           <button className="btn-ghost">search</button>
