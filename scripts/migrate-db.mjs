@@ -27,6 +27,9 @@ try {
   if (!bannerFk.present) {
     await sql.unsafe('alter table users add constraint users_banner_fk foreign key (banner_id) references media(id) on delete set null');
   }
+  await sql`alter table users add column if not exists last_seen_at timestamptz`
+  await sql`alter table users add column if not exists last_page text not null default 'the site'`
+  await sql`create index if not exists users_last_seen_idx on users (last_seen_at desc)`
   await sql`create table if not exists rate_limits (key text primary key, window_start timestamptz not null, hits integer not null default 0)`;
   await sql`create index if not exists rate_limits_window_idx on rate_limits (window_start)`;
   await sql`create table if not exists site_announcement (id smallint primary key default 1 check (id = 1), message text not null default '', enabled boolean not null default false, updated_at timestamptz not null default now(), updated_by uuid references users(id) on delete set null)`;
