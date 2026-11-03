@@ -77,7 +77,7 @@ export async function POST(req) {
   await purgeExpiredMessages();
   const sc = await resolve(user, req.nextUrl.searchParams);
   if (!sc) return json({ error: 'Not found.' }, 404);
-  if (!await limitPersistent(`chat:${user.id}`, 12, 15 * 1000)) return json({ error: 'You are sending too fast.' }, 429);
+  if (!await limitPersistent(`chat:${user.id}`, 12, 15 * 1000) || !await limitPersistent(`chat-minute:${user.id}`, 60, 60 * 1000)) return json({ error: 'You are sending too fast.' }, 429);
 
   let fd;
   try { fd = await req.formData(); } catch { return json({ error: 'Bad request.' }, 400); }
