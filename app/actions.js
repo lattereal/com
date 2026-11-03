@@ -29,9 +29,10 @@ export async function register(_, fd) {
     const hash = await bcrypt.hash(password, 12);
     // The very first account becomes the owner.
     const [u] = await sql`
-      insert into users (username, password_hash, ip_hash, role)
+      insert into users (username, password_hash, ip_hash, role, roles)
       values (${username}, ${hash}, ${ipLockHash()},
-              case when exists (select 1 from users where role = 'owner') then 'member' else 'owner' end)
+              case when exists (select 1 from users where role = 'owner') then 'member' else 'owner' end,
+              array[case when exists (select 1 from users where role = 'owner') then 'member' else 'owner' end]::text[])
       returning id`;
     await createSession(u.id);
   } catch (e) {
