@@ -14,6 +14,7 @@ export default async function Nav({ user }) {
         <nav aria-label="Main navigation" className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <Link href="/" className={navLink}>Boards</Link>
           <Link href="/profiles" className={navLink}>Profiles</Link>
+          <Link href="/ranks" className={navLink}>Ranks</Link>
           {user && <>
             <Link href="/chat" className={navLink}>Chat</Link>
             <Link href="/messages" className={navLink}>Messages</Link>
