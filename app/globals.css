@@ -247,3 +247,19 @@ footer a:hover { color: #b8b8ff; }
 .btn-primary:hover { background: #5558df !important; box-shadow: none !important; transform: none !important; }
 .btn-ghost:hover { transform: none !important; box-shadow: none !important; }
 .input:focus { box-shadow: none !important; }
+
+/* Calm, content-first forum styling. */
+html, body { background: #101012 !important; }
+body { background-image: none !important; background-attachment: initial !important; }
+body::before { display: none !important; }
+.site-main, .site-main > * { animation: none !important; filter: none !important; }
+header { box-shadow: none !important; backdrop-filter: none !important; background: #101012 !important; }
+header a:first-child { background: none !important; color: #ededed !important; animation: none !important; }
+header nav a:hover { transform: none !important; }
+header nav a::after { display: none !important; }
+.board-card, .board-card:hover { background: #171719 !important; border-color: #303034 !important; box-shadow: none !important; transform: none !important; }
+.board-card::before { display: none !important; }
+.stats-strip { box-shadow: none !important; animation: none !important; }
+.category-label { letter-spacing: .04em; }
+.category-label::after { background: #303034; }
+footer { background: transparent !important; }
